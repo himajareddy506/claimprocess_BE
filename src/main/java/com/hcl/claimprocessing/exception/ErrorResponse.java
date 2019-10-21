@@ -7,10 +7,11 @@ import lombok.Setter;
 @Setter
 public class ErrorResponse {
 	private String message;
-	private Integer code;
+	private Integer statusCode;
+
 	public ErrorResponse(String message, int value) {
-		this.message=message;
-		this.code=value;
+		this.message = message;
+		this.statusCode = value;
 	}
 
 }

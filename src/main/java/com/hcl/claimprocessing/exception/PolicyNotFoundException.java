@@ -1,10 +1,9 @@
 package com.hcl.claimprocessing.exception;
 
-public class PolicyNotExistException extends Exception {
+public class PolicyNotFoundException extends RuntimeException{
 
 	private static final long serialVersionUID = 1L;
-
-	public PolicyNotExistException(String message) {
+	public PolicyNotFoundException(String message) {
 		super(message);
 	}
 }
