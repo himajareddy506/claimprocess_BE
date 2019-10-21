@@ -24,7 +24,6 @@ public class Claim {
 		private String hospitalName;
 		private Double claimAmount;
 		private String detailsOfDischargeSummary;
-		private String claimStatus;
 		private String reason;
 		private Long policyId;
 		private String seniorApproverClaimStatus;
