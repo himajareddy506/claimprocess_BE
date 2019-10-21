@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +20,7 @@ import com.hcl.claimprocessing.service.PolicyService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/policy")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
 public class PolicyController {
 
@@ -31,7 +29,7 @@ public class PolicyController {
 	@Autowired
 	PolicyService policyService;
 
-	@PostMapping("/policy")
+	@PostMapping("/")
 	public ResponseEntity<PolicyResponseDto> search(@RequestParam("policyId") Long policyId) {
 		logger.info("inside search policy controller");
 		if (policyId == null) {

@@ -27,4 +27,8 @@ public class Claim {
 		private String claimStatus;
 		private String reason;
 		private Long policyId;
+		private String seniorApproverClaimStatus;
+		private String juniorApproverClaimStatus;
+		private String seniorApprovedBy;
+		private String juniorApprovedBy;
 }
