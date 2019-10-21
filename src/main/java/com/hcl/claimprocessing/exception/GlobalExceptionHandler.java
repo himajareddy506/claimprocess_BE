@@ -49,5 +49,11 @@ public class GlobalExceptionHandler extends Exception {
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
+	@ExceptionHandler(ClaimNotFoundException.class)
+	public ResponseEntity<ErrorResponse> ClaimNotFoundException(Exception e) {
+	
+		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(error, HttpStatus.OK);
+	}
 	
 }

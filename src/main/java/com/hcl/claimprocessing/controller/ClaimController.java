@@ -8,12 +8,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
+import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
+import com.hcl.claimprocessing.exception.ClaimNotFoundException;
 import com.hcl.claimprocessing.exception.InfoExistException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
@@ -48,5 +51,22 @@ public class ClaimController {
 		}
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
 		return new ResponseEntity<>(claimInfo.get(), HttpStatus.CREATED);
+	}
+
+	/**
+	 * This method is used to update the claimInfo of the user who have
+	 * policy/insurance .
+	 * 
+	 * @param claimId,reason,claimStatus,userId
+	 * @exception ClaimNotFoundException,UserNotExistException
+	 */
+	@PutMapping("/")
+	public void updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
+			throws ValidInputException {
+		if (result.hasErrors()) {
+			throw new ValidInputException(
+					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
+		}
+
 	}
 }

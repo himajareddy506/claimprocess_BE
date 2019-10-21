@@ -9,6 +9,6 @@ import com.hcl.claimprocessing.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-	Optional<User> findByEmailId(String emailId);
+		Optional<User> findByEmailIdAndPassCode(String emailId, String passCode);
 	
 }

@@ -3,22 +3,20 @@ package com.hcl.claimprocessing.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.util.Random;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
+import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
 import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.entity.Policy;
 import com.hcl.claimprocessing.entity.User;
+import com.hcl.claimprocessing.exception.ClaimNotFoundException;
 import com.hcl.claimprocessing.exception.InfoExistException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
-import com.hcl.claimprocessing.exception.ValidInputException;
 import com.hcl.claimprocessing.repository.ClaimRepository;
 import com.hcl.claimprocessing.repository.PolicyRepository;
 import com.hcl.claimprocessing.repository.UserRepository;
@@ -86,6 +84,44 @@ public class ClaimServiceImpl implements ClaimService {
 		claimResponse.setStatusCode(HttpStatus.CREATED.value());
 
 		return Optional.of(claimResponse);
+	}
+
+	/**
+	 * This method is used to update the claimInfo of the user who have
+	 * policy/insurance .
+	 * 
+	 * @param claimId,reason,claimStatus,userId
+	 * @exception ClaimNotFoundException,UserNotExistException
+	 */
+
+	@Override
+	public Optional<Claim> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo)
+			throws UserNotExistException, ClaimNotFoundException {
+		Optional<User> userInfo = userRepository.findById(claimUpdateInfo.getUserId());
+		if (!userInfo.isPresent()) {
+			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
+		}
+		Optional<Claim> claimInfo = claimRepository.findById(claimUpdateInfo.getClaimId());
+		if (!claimInfo.isPresent()) {
+			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_FOUND);
+		}
+		Claim claim = claimInfo.get();
+		if (userInfo.get().getRoleId() == ClaimConstants.Approver) {
+			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
+			claim.setReason(claimUpdateInfo.getReason());
+			if (claimUpdateInfo.getClaimStatus() != ClaimConstants.PENDING_STATUS) {
+				claim.setJuniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
+			}
+		}
+		if (userInfo.get().getRoleId() == ClaimConstants.seniorApprover) {
+			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
+			claim.setReason(claimUpdateInfo.getReason());
+			if (claimUpdateInfo.getClaimStatus() != ClaimConstants.PENDING_STATUS) {
+				claim.setSeniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
+			}
+		}
+
+		return Optional.of(claim);
 	}
 
 }

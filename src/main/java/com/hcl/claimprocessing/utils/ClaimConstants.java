@@ -15,6 +15,7 @@ public class ClaimConstants {
 	public static final String POLICY_NOT_FOUND_EXCEPTION = "Your policy number doesnot exist";
 	public static final String POLICY_ID_MANDATORY_EXCEPTION = "Policy Id is mandatory";
 	public static final String POLICY_ID_EXIST = "Policy Id exists and success";
+	public static final String CLAIM_INFO_NOT_FOUND="Claim Inffo Not Found";
 	private ClaimConstants() {
 		throw new IllegalStateException("Utility class");
 	}
