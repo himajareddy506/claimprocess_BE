@@ -43,10 +43,11 @@ public class UserController {
 	@PostMapping("/")
 	public ResponseEntity<UserResponseDto> loginUser(@RequestBody UserRequestDto loginRequestDto, BindingResult result)
 			throws ValidInputException, UserNotExistException, LoginDeniedException {
-		if (result.hasErrors()) {
-			throw new ValidInputException(
-					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
-		}
+		/*
+		 * if (result.hasErrors()) { throw new ValidInputException(
+		 * result.getFieldError().getField() + ":" +
+		 * result.getFieldError().getDefaultMessage()); }
+		 */
 		UserResponseDto userResponse = new UserResponseDto();
 		Optional<User> user = userService.loginUser(loginRequestDto);
 		user.ifPresent(users -> {

@@ -67,10 +67,7 @@ public class ClaimServiceImpl implements ClaimService {
 		claim.setAdmitDate(admitDate);
 		claim.setDischargeDate(dischargeDate);
 		claim.setClaimAmount(claimRequestDto.getTotalAmount());
-
-		claim.setSeniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
 		claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
-
 		claimRepository.save(claim);
 		Optional<Policy> policy = policyRepository.findById(claimRequestDto.getPolicyId());
 		if (!policy.isPresent()) {
@@ -89,7 +86,6 @@ public class ClaimServiceImpl implements ClaimService {
 		claimResponse.setPolicyNumber(policy.get().getPolicyId());
 		claimResponse.setMessage(ClaimConstants.CLAIM_APPLIED);
 		claimResponse.setStatusCode(HttpStatus.CREATED.value());
-
 		return Optional.of(claimResponse);
 	}
 
