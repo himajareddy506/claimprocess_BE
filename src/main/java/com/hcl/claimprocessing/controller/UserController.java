@@ -36,6 +36,7 @@ public class UserController {
 	 * This method will be used for the userLogin based on the Role
 	 * 
 	 * @param emailId , passcode
+	 * @return It returns UserResponseDto
 	 * @exception It handles
 	 *               ValidInputException,UserNotExistException,LoginDeniedException
 	 */
@@ -43,11 +44,7 @@ public class UserController {
 	@PostMapping("/")
 	public ResponseEntity<UserResponseDto> loginUser(@RequestBody UserRequestDto loginRequestDto, BindingResult result)
 			throws ValidInputException, UserNotExistException, LoginDeniedException {
-		/*
-		 * if (result.hasErrors()) { throw new ValidInputException(
-		 * result.getFieldError().getField() + ":" +
-		 * result.getFieldError().getDefaultMessage()); }
-		 */
+
 		UserResponseDto userResponse = new UserResponseDto();
 		Optional<User> user = userService.loginUser(loginRequestDto);
 		user.ifPresent(users -> {
@@ -55,6 +52,6 @@ public class UserController {
 			userResponse.setMessage(ClaimConstants.LOGIN_SUCCESS);
 			userResponse.setStatusCode(HttpStatus.OK.value());
 		});
-		return new ResponseEntity<>(userResponse,HttpStatus.OK);
+		return new ResponseEntity<>(userResponse, HttpStatus.OK);
 	}
 }

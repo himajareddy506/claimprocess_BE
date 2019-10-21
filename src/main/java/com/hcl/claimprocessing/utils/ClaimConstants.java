@@ -19,11 +19,12 @@ public class ClaimConstants {
 	public static final String POLICY_NOT_FOUND_EXCEPTION = "Your policy number doesnot exist";
 	public static final String POLICY_ID_MANDATORY_EXCEPTION = "Policy Id is mandatory";
 	public static final String POLICY_ID_EXIST = "Policy Id exists and success";
-	public static final String ESCALATED_STATUS="Escalated";
-	public static final String CLAIM_INFO_NOT_FOUND="Claim Inffo Not Found";
+	public static final String ESCALATED_STATUS = "Escalated";
+	public static final String CLAIM_INFO_NOT_FOUND = "Claim Inffo Not Found";
 	public static final Integer PAGENATION_SIZE = 5;
 	public static final String CLAIM_INFO_NOT_EXIST = "Claim Info Not Exist";
 	public static final String INVALID_INPUTS = "Invalid pagenumber";
 	public static final String INVALID_CREDENTIAL = "Invalid credentials";
+	public static final String CLAIM_UPDATE_SUCCESS = "Claim Info Updated Successfully";
 
 }
