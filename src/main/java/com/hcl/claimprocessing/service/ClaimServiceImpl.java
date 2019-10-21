@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
+import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
 import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.entity.Policy;
 import com.hcl.claimprocessing.entity.User;
@@ -65,10 +66,7 @@ public class ClaimServiceImpl implements ClaimService {
 		claim.setAdmitDate(admitDate);
 		claim.setDischargeDate(dischargeDate);
 		claim.setClaimAmount(claimRequestDto.getTotalAmount());
-
-		claim.setSeniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
 		claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
-
 		claimRepository.save(claim);
 		Optional<Policy> policy = policyRepository.findById(claimRequestDto.getPolicyId());
 		if (!policy.isPresent()) {
@@ -87,11 +85,11 @@ public class ClaimServiceImpl implements ClaimService {
 		claimResponse.setPolicyNumber(policy.get().getPolicyId());
 		claimResponse.setMessage(ClaimConstants.CLAIM_APPLIED);
 		claimResponse.setStatusCode(HttpStatus.CREATED.value());
-
 		return Optional.of(claimResponse);
 	}
 
 	/**
+
 	 * This method is used to avail claim info of the logged-in use Approver/Senior
 	 * Approver .
 	 * 
@@ -99,6 +97,38 @@ public class ClaimServiceImpl implements ClaimService {
 	 * @exception UserNotExistException,ClaimNotFoundException
 	 * @return Optional<List<Claim>>
 	 */
+
+
+	@Override
+	public Optional<Claim> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo)
+			throws UserNotExistException, ClaimNotFoundException {
+		Optional<User> userInfo = userRepository.findById(claimUpdateInfo.getUserId());
+		if (!userInfo.isPresent()) {
+			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
+		}
+		Optional<Claim> claimInfo = claimRepository.findById(claimUpdateInfo.getClaimId());
+		if (!claimInfo.isPresent()) {
+			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_FOUND);
+		}
+		Claim claim = claimInfo.get();
+		if (userInfo.get().getRoleId() == ClaimConstants.Approver) {
+			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
+			claim.setReason(claimUpdateInfo.getReason());
+			if (claimUpdateInfo.getClaimStatus() != ClaimConstants.PENDING_STATUS) {
+				claim.setJuniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
+			}
+		}
+		if (userInfo.get().getRoleId() == ClaimConstants.seniorApprover) {
+			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
+			claim.setReason(claimUpdateInfo.getReason());
+			if (claimUpdateInfo.getClaimStatus() != ClaimConstants.PENDING_STATUS) {
+				claim.setSeniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
+			}
+		}
+
+		return Optional.of(claim);
+	}
+
 	@Override
 	public Optional<List<Claim>> getClaimList(Integer userId, Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException {

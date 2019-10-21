@@ -10,13 +10,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
+import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
 import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.exception.ClaimNotFoundException;
 import com.hcl.claimprocessing.exception.InfoExistException;
@@ -57,6 +58,7 @@ public class ClaimController {
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
 		return new ResponseEntity<>(claimInfo.get(), HttpStatus.CREATED);
 	}
+
 	/**
 	 * This method is used to avail claim info of the logged-in use Approver/Senior
 	 * Approver .
@@ -65,6 +67,24 @@ public class ClaimController {
 	 * @exception UserNotExistException,ClaimNotFoundException
 	 * @return Optional<List<Claim>>
 	 */
+
+	/**
+	 * This method is used to update the claimInfo of the user who have
+	 * policy/insurance .
+	 * 
+	 * @param claimId,reason,claimStatus,userId
+	 * @exception ClaimNotFoundException,UserNotExistException
+	 */
+	@PutMapping("/")
+	public void updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
+			throws ValidInputException {
+		if (result.hasErrors()) {
+			throw new ValidInputException(
+					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
+		}
+
+	}
+
 	@GetMapping("/")
 	public ResponseEntity<List<Claim>> getClaimList(@RequestParam("userId") Integer userId,
 			@RequestParam("pageNumber") Integer pageNumber)
@@ -79,5 +99,4 @@ public class ClaimController {
 		return new ResponseEntity<>(claimList.get(), HttpStatus.OK);
 
 	}
-
 }
