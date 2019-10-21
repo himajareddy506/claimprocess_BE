@@ -1,9 +1,10 @@
 package com.hcl.claimprocessing.exception;
 
-public class ClaimNotFoundException extends Exception{
-
+public class UserException extends Exception {
 	private static final long serialVersionUID = 1L;
-	public ClaimNotFoundException(String message) {
+
+	public UserException(String message) {
 		super(message);
 	}
+
 }

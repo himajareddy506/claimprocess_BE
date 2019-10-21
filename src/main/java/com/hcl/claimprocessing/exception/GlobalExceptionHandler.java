@@ -43,12 +43,28 @@ public class GlobalExceptionHandler extends Exception {
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
-	@ExceptionHandler(LoginDeniedException.class)
-	public ResponseEntity<ErrorResponse> LoginDeniedException(Exception e) {
-	
+
+	@ExceptionHandler(ClaimNotFoundException.class)
+	public ResponseEntity<ErrorResponse> ClaimNotFoundException(Exception e) {
+
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
+
+	@ExceptionHandler(UserException.class)
+	public ResponseEntity<ErrorResponse> UserException(Exception e) {
+
+		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(error, HttpStatus.OK);
+	}
+
+	@ExceptionHandler(LoginDeniedException.class)
+	public ResponseEntity<ErrorResponse> LoginDeniedException(Exception e) {
+
+		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(error, HttpStatus.OK);
+	}
+<<<<<<< HEAD
 	@ExceptionHandler(ClaimNotFoundException.class)
 	public ResponseEntity<ErrorResponse> ClaimNotFoundException(Exception e) {
 	
@@ -56,4 +72,7 @@ public class GlobalExceptionHandler extends Exception {
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 	
+=======
+
+>>>>>>> d89fd2f8182d0f5bfb079c498cb771bfe8ff441f
 }

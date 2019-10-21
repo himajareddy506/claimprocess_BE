@@ -33,9 +33,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Optional<User> loginUser(UserRequestDto loginRequestDto) throws UserNotExistException, LoginDeniedException {
+
 		Optional<User> user = userRepository.findByEmailIdAndPassCode(loginRequestDto.getEmailId(),loginRequestDto.getPassCode());
 		if (!user.isPresent()) {
-			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
+			throw new UserNotExistException(ClaimConstants.INVALID_CREDENTIAL);
 		}
 		if ((user.get().getRoleId() != ClaimConstants.Approver)
 				&& (user.get().getRoleId() != ClaimConstants.seniorApprover)) {

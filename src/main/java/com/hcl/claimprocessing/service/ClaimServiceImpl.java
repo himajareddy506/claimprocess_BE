@@ -2,9 +2,14 @@ package com.hcl.claimprocessing.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
@@ -27,6 +32,7 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
  * 
  * @author Subashri
  */
+
 @Service
 public class ClaimServiceImpl implements ClaimService {
 	@Autowired
@@ -35,7 +41,6 @@ public class ClaimServiceImpl implements ClaimService {
 	UserRepository userRepository;
 	@Autowired
 	PolicyRepository policyRepository;
-
 	/**
 	 * This method is used to avail claim by the user who have policy/insurance .
 	 * 
@@ -62,8 +67,10 @@ public class ClaimServiceImpl implements ClaimService {
 		claim.setAdmitDate(admitDate);
 		claim.setDischargeDate(dischargeDate);
 		claim.setClaimAmount(claimRequestDto.getTotalAmount());
+
 		claim.setSeniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
 		claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
+
 		claimRepository.save(claim);
 		Optional<Policy> policy = policyRepository.findById(claimRequestDto.getPolicyId());
 		if (!policy.isPresent()) {
@@ -122,6 +129,18 @@ public class ClaimServiceImpl implements ClaimService {
 		}
 
 		return Optional.of(claim);
+	}
+	@Override
+	public Optional<List<Claim>> getClaimList(Integer userId, Integer pageNumber) throws UserNotExistException {
+		Pageable pageable = PageRequest.of(pageNumber, ClaimConstants.PAGENATION_SIZE);
+		Optional<User> user = userRepository.findById(userId);
+		if (!user.isPresent()) {
+			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
+		}
+		Page<Claim> claim = claimRepository.findAll(pageable);
+		List<Claim> claimList = new ArrayList<Claim>();
+		claimList = claim.getContent();
+		return Optional.of(claimList);
 	}
 
 }

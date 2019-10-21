@@ -1,5 +1,6 @@
 package com.hcl.claimprocessing.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
@@ -12,6 +13,13 @@ import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
 
 public interface ClaimService {
-		public Optional<ClaimResponseDto> applyClaim(ClaimRequestDto claimRequestDto) throws InfoExistException,PolicyNotExistException,UserNotExistException;
-		public Optional<Claim> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo) throws UserNotExistException,ClaimNotFoundException;
+
+	public Optional<ClaimResponseDto> applyClaim(ClaimRequestDto claimRequestDto)
+			throws InfoExistException, PolicyNotExistException, UserNotExistException;
+
+	public Optional<Claim> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo)
+			throws UserNotExistException, ClaimNotFoundException;
+
+	public Optional<List<Claim>> getClaimList(Integer userId, Integer pageNumber) throws UserNotExistException;
+
 }
