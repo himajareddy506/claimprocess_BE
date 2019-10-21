@@ -57,7 +57,14 @@ public class ClaimController {
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
 		return new ResponseEntity<>(claimInfo.get(), HttpStatus.CREATED);
 	}
-
+	/**
+	 * This method is used to avail claim info of the logged-in use Approver/Senior
+	 * Approver .
+	 * 
+	 * @param userId,pageNumber
+	 * @exception UserNotExistException,ClaimNotFoundException
+	 * @return Optional<List<Claim>>
+	 */
 	@GetMapping("/")
 	public ResponseEntity<List<Claim>> getClaimList(@RequestParam("userId") Integer userId,
 			@RequestParam("pageNumber") Integer pageNumber)

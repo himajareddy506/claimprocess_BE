@@ -5,21 +5,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
 import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.entity.Policy;
 import com.hcl.claimprocessing.entity.User;
+import com.hcl.claimprocessing.exception.ClaimNotFoundException;
 import com.hcl.claimprocessing.exception.InfoExistException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
@@ -43,13 +38,12 @@ public class ClaimServiceImpl implements ClaimService {
 	@Autowired
 	PolicyRepository policyRepository;
 
-	Random random;
-
 	/**
 	 * This method is used to avail claim by the user who have policy/insurance .
 	 * 
 	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
 	 * @exception InfoExistException,PolicyNotExistException,UserNotExistException
+	 * 
 	 */
 
 	@Override
@@ -97,17 +91,46 @@ public class ClaimServiceImpl implements ClaimService {
 		return Optional.of(claimResponse);
 	}
 
+	/**
+	 * This method is used to avail claim info of the logged-in use Approver/Senior
+	 * Approver .
+	 * 
+	 * @param userId,pageNumber
+	 * @exception UserNotExistException,ClaimNotFoundException
+	 * @return Optional<List<Claim>>
+	 */
 	@Override
-	public Optional<List<Claim>> getClaimList(Integer userId, Integer pageNumber) throws UserNotExistException {
-		Pageable pageable = PageRequest.of(pageNumber, ClaimConstants.PAGENATION_SIZE);
-		Optional<User> user = userRepository.findById(userId);
+	public Optional<List<Claim>> getClaimList(Integer userId, Integer pageNumber)
+			throws UserNotExistException, ClaimNotFoundException {
+
+		Optional<Claim> claims = claimRepository.findByUserId(userId);
+		if (!claims.isPresent()) {
+			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
+		}
+		Optional<User> user = userRepository.findById(claims.get().getUserId());
 		if (!user.isPresent()) {
 			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
 		}
-		Page<Claim> claim = claimRepository.findAll(pageable);
-		List<Claim> claimList = new ArrayList<Claim>();
-		claimList = claim.getContent();
-		return Optional.of(claimList);
+		Integer role = user.get().getRoleId();
+		List<Claim> claimInfos = claimRepository.findAll();
+		List<Claim> claimResponse = new ArrayList<>();
+		if (role == ClaimConstants.seniorApprover) {
+			claimInfos.forEach(claimInfo -> {
+				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {
+					claimResponse.add(claimInfo);
+				}
+			});
+
+		}
+		if (role == ClaimConstants.Approver) {
+			claimInfos.forEach(claimInfo -> {
+				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {
+					claimResponse.add(claimInfo);
+				}
+			});
+		}
+
+		return Optional.of(claimResponse);
 	}
 
 }
