@@ -1,8 +1,6 @@
 package com.hcl.claimprocessing.dto;
 
-import java.time.LocalDate;
-
-import com.sun.istack.NotNull;
+import javax.validation.constraints.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,11 +8,11 @@ import lombok.Setter;
 @Setter
 public class ClaimRequestDto {
 		@NotNull
-		private Long policyNumber;
+		private Long policyId;
 		@NotNull
-		private LocalDate admitDate;
+		private String admitDate;
 		@NotNull
-		private LocalDate dischargeDate;
+		private String dischargeDate;
 		@NotNull
 		private String hospitalName;
 		@NotNull
@@ -25,4 +23,10 @@ public class ClaimRequestDto {
 		private String natureOfAilment;
 		@NotNull
 		private String diagnosis;
+		@NotNull
+		private String reason;
+		@NotNull
+		private String claimStatus;
+		
+		
 }
