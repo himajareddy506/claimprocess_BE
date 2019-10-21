@@ -17,18 +17,17 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class Claim {
-		@Id
-		private Long claimId;
-		private LocalDate admitDate;
-		private LocalDate dischargeDate;
-		private String hospitalName;
-		private Double claimAmount;
-		private String detailsOfDischargeSummary;
-		private String claimStatus;
-		private String reason;
-		private Long policyId;
-		private String seniorApproverClaimStatus;
-		private String juniorApproverClaimStatus;
-		private String seniorApprovedBy;
-		private String juniorApprovedBy;
+	@Id
+	private Long claimId;
+	private LocalDate admitDate;
+	private LocalDate dischargeDate;
+	private String hospitalName;
+	private Double claimAmount;
+	private String detailsOfDischargeSummary;
+	private String reason;
+	private Long policyId;
+	private String seniorApproverClaimStatus;
+	private String juniorApproverClaimStatus;
+	private String seniorApprovedBy;
+	private String juniorApprovedBy;
 }
