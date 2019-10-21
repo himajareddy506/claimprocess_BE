@@ -28,6 +28,12 @@ import com.hcl.claimprocessing.repository.PolicyRepository;
 import com.hcl.claimprocessing.repository.UserRepository;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
+/**
+ * This class is used to avail claim by the user.
+ * 
+ * @author Subashri
+ */
+
 @Service
 public class ClaimServiceImpl implements ClaimService {
 	@Autowired
@@ -38,6 +44,13 @@ public class ClaimServiceImpl implements ClaimService {
 	PolicyRepository policyRepository;
 
 	Random random;
+
+	/**
+	 * This method is used to avail claim by the user who have policy/insurance .
+	 * 
+	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
+	 * @exception InfoExistException,PolicyNotExistException,UserNotExistException
+	 */
 
 	@Override
 	public Optional<ClaimResponseDto> applyClaim(ClaimRequestDto claimRequestDto)
@@ -58,6 +71,10 @@ public class ClaimServiceImpl implements ClaimService {
 		claim.setAdmitDate(admitDate);
 		claim.setDischargeDate(dischargeDate);
 		claim.setClaimAmount(claimRequestDto.getTotalAmount());
+
+		claim.setSeniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
+		claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
+
 		claimRepository.save(claim);
 		Optional<Policy> policy = policyRepository.findById(claimRequestDto.getPolicyId());
 		if (!policy.isPresent()) {

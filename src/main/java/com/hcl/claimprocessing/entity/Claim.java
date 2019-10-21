@@ -17,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class Claim {
+
 	@Id
 	private Long claimId;
 	private LocalDate admitDate;
@@ -30,4 +31,5 @@ public class Claim {
 	private String juniorApproverClaimStatus;
 	private String seniorApprovedBy;
 	private String juniorApprovedBy;
+
 }

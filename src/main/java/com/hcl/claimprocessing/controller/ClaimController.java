@@ -27,6 +27,11 @@ import com.hcl.claimprocessing.exception.ValidInputException;
 import com.hcl.claimprocessing.service.ClaimService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
+/**
+ * This class is used to avail claim by the user.
+ * 
+ * @author Subashri
+ */
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
@@ -34,6 +39,12 @@ public class ClaimController {
 	@Autowired
 	ClaimService claimService;
 
+	/**
+	 * This method is used to avail claim by the user who have policy/insurance .
+	 * 
+	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
+	 * @exception ValidInputException,InfoExistException,PolicyNotExistException,UserNotExistException
+	 */
 	@PostMapping("/claims")
 	public ResponseEntity<ClaimResponseDto> applyClaim(@RequestBody ClaimRequestDto claimRequestDto,
 			BindingResult result)
@@ -41,6 +52,7 @@ public class ClaimController {
 		if (result.hasErrors()) {
 			throw new ValidInputException(
 					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
+
 		}
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
 		return new ResponseEntity<>(claimInfo.get(), HttpStatus.CREATED);
@@ -58,6 +70,7 @@ public class ClaimController {
 			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
 		}
 		return new ResponseEntity<>(claimList.get(), HttpStatus.OK);
+
 	}
 
 }

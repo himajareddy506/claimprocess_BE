@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends Exception {
-
 	private static final long serialVersionUID = 1L;
 
 	@ExceptionHandler(InfoExistException.class)
@@ -58,4 +57,12 @@ public class GlobalExceptionHandler extends Exception {
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
+
+	@ExceptionHandler(LoginDeniedException.class)
+	public ResponseEntity<ErrorResponse> LoginDeniedException(Exception e) {
+
+		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(error, HttpStatus.OK);
+	}
+
 }
