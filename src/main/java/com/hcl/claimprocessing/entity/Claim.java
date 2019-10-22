@@ -31,6 +31,7 @@ public class Claim {
 	private String juniorApproverClaimStatus;
 	private String seniorApprovedBy;
 	private String juniorApprovedBy;
-    private Integer userId;
+    private Integer roleId;
     private Double eligiblityAmount;
+    private Integer ailmentId;
 }

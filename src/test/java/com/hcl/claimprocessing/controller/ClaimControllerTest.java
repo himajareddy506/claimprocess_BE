@@ -66,7 +66,7 @@ public class ClaimControllerTest {
 		claimUpdateInfo.setClaimId(1983647L);
 		claimUpdateInfo.setClaimStatus("Pending");
 		claimUpdateInfo.setReason("Valid");
-		claimUpdateInfo.setUserId(1);
+		claimUpdateInfo.setRoleId(1);
 		claim.setAdmitDate(LocalDate.parse("2019-05-04"));
 		claim.setClaimAmount(2000.0);
 		claim.setClaimId(345678L);
@@ -79,7 +79,7 @@ public class ClaimControllerTest {
 		claim.setJuniorApproverClaimStatus("Pending");
 		claim.setPolicyId(1234569L);
 		claim.setReason("Valid");
-		claim.setUserId(2);
+		claim.setRoleId(1);
 		claimList.add(claim);
 		pageNumber=1;
 		
@@ -92,7 +92,7 @@ public class ClaimControllerTest {
 		assertNotNull(claimResponses);
 	}
 	@Test
-	public void testUpdateClaimInfo() throws UserNotExistException, ClaimNotFoundException, ValidInputException {
+	public void testUpdateClaimInfo() throws UserNotExistException, ClaimNotFoundException, ValidInputException, InfoException {
 		claimData=Optional.of(claim);
 		Mockito.when(claimService.updateClaimInfo(claimUpdateInfo)).thenReturn(claimData);
 		ResponseEntity<CommonResponse> response=claimController.updateClaimInfo(claimUpdateInfo, result);
@@ -103,14 +103,14 @@ public class ClaimControllerTest {
 	public void testGetClaimList() throws UserNotExistException, ClaimNotFoundException, UserException {
 		claimListInfo=Optional.of(claimList);
 		Mockito.when(claimService.getClaimList(Mockito.anyInt(), Mockito.any())).thenReturn(claimListInfo);
-		ResponseEntity<List<Claim>> claimResponseList=claimController.getClaimList(claim.getUserId(), pageNumber);
+		ResponseEntity<List<Claim>> claimResponseList=claimController.getClaimList(claim.getRoleId(), pageNumber);
 		assertNotNull(claimResponseList);
 	}
 	@Test(expected = UserException.class)
 	public void testGetClaimIdNull() throws UserNotExistException, ClaimNotFoundException, UserException {
 		claimListInfo=Optional.of(claimList);
 		pageNumber=-1;
-		ResponseEntity<List<Claim>> claimResponseList=claimController.getClaimList(claim.getUserId(), pageNumber);
+		ResponseEntity<List<Claim>> claimResponseList=claimController.getClaimList(claim.getRoleId(), pageNumber);
 		assertNotNull(claimResponseList);
 		
 

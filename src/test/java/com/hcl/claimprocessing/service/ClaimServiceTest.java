@@ -14,6 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
@@ -30,7 +34,8 @@ import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
 import com.hcl.claimprocessing.repository.AilmentRepository;
 import com.hcl.claimprocessing.repository.ClaimRepository;
-import com.hcl.claimprocessing.repository.HospitalRepository;import com.hcl.claimprocessing.repository.PolicyRepository;
+import com.hcl.claimprocessing.repository.HospitalRepository;
+import com.hcl.claimprocessing.repository.PolicyRepository;
 import com.hcl.claimprocessing.repository.UserRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,24 +58,28 @@ public class ClaimServiceTest {
 	ClaimUpdateRequestDto claimUpdateInfo = new ClaimUpdateRequestDto();
 	Claim claim = new Claim();
 	Optional<Claim> claimData;
+	List<Claim> claimDetailList;
 	Optional<ClaimResponseDto> claimInfo;
 	BindingResult result;
 	List<Claim> claimList = new ArrayList<>();
 	Optional<List<Claim>> claimListInfo;
 	Integer pageNumber = 0;
-	Hospital hospital=new Hospital();
+	Hospital hospital = new Hospital();
 	Optional<Hospital> hospitalInfo;
-	Ailments ailment=new Ailments();
+	Ailments ailment = new Ailments();
 	Optional<Ailments> ailmentInfo;
 	Long policyId;
 	Policy policy = new Policy();
 	Optional<Policy> policyInfo;
-	User user=new User();
+	User user = new User();
 	Optional<User> userInfo;
-	
+	Page<Claim> claimBook;
+	Pageable pageable;
+	Double maxAmount;
 
 	@Before
 	public void initateData() {
+		maxAmount = 2000.0;
 		claimRequestDto.setAdmitDate("2019/06/21");
 		claimRequestDto.setDischargeDate("2019/06/23");
 		claimRequestDto.setClaimStatus("Pending");
@@ -91,7 +100,7 @@ public class ClaimServiceTest {
 		claimUpdateInfo.setClaimId(1983647L);
 		claimUpdateInfo.setClaimStatus("Pending");
 		claimUpdateInfo.setReason("Valid");
-		claimUpdateInfo.setUserId(1);
+		claimUpdateInfo.setRoleId(1);
 		claim.setAdmitDate(LocalDate.parse("2019-05-04"));
 		claim.setClaimAmount(2000.0);
 		claim.setClaimId(345678L);
@@ -104,7 +113,8 @@ public class ClaimServiceTest {
 		claim.setJuniorApproverClaimStatus("Pending");
 		claim.setPolicyId(1234569L);
 		claim.setReason("Valid");
-		claim.setUserId(2);
+		claim.setAilmentId(1);
+		claim.setRoleId(2);
 		claimList.add(claim);
 		pageNumber = 1;
 		hospital.setHospitalId(1);
@@ -122,147 +132,177 @@ public class ClaimServiceTest {
 		user.setEmailId("subashri@gmail.com");
 		user.setFirstName("Subashri");
 		user.setLastName("S");
-		user.setMobileNumber(956683871L);	
+		user.setMobileNumber(956683871L);
 		user.setPassCode("12345");
 		user.setRoleId(1);
-		
+		pageable = PageRequest.of(0, 5);
 
 	}
 
 	@Test(expected = InfoException.class)
 	public void testApplyClaim() throws InfoException, PolicyNotExistException, UserNotExistException {
-		claimData=Optional.of(claim);
-		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any())).thenReturn(claimData);
-		Optional<ClaimResponseDto> response=claimService.applyClaim(claimRequestDto);
+		claimData = Optional.of(claim);
+		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any()))
+				.thenReturn(claimData);
+		Optional<ClaimResponseDto> response = claimService.applyClaim(claimRequestDto);
 		assertNotNull(response);
 	}
+
 	@Test(expected = InfoException.class)
-	public void testApplyClaimHospitalValidation() throws InfoException, PolicyNotExistException, UserNotExistException {
-		claimData=Optional.ofNullable(null);
-		hospitalInfo=Optional.ofNullable(null);
-		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any())).thenReturn(claimData);
+	public void testApplyClaimHospitalValidation()
+			throws InfoException, PolicyNotExistException, UserNotExistException {
+		claimData = Optional.ofNullable(null);
+		hospitalInfo = Optional.ofNullable(null);
+		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any()))
+				.thenReturn(claimData);
 		Mockito.when(hospitalRepository.findByHospitalName(Mockito.anyString())).thenReturn(hospitalInfo);
-		Optional<ClaimResponseDto> response=claimService.applyClaim(claimRequestDto);
+		Optional<ClaimResponseDto> response = claimService.applyClaim(claimRequestDto);
 		assertNotNull(response);
 	}
+
 	@Test(expected = InfoException.class)
 	public void testApplyClaimAilmentValidation() throws InfoException, PolicyNotExistException, UserNotExistException {
-		claimData=Optional.ofNullable(null);
-		hospitalInfo=Optional.of(hospital);
-		ailmentInfo=Optional.ofNullable(null);
-		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any())).thenReturn(claimData);
+		claimData = Optional.ofNullable(null);
+		hospitalInfo = Optional.of(hospital);
+		ailmentInfo = Optional.ofNullable(null);
+		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any()))
+				.thenReturn(claimData);
 		Mockito.when(hospitalRepository.findByHospitalName(Mockito.anyString())).thenReturn(hospitalInfo);
 		Mockito.when(ailmentRepository.findByAilmentName(Mockito.anyString())).thenReturn(ailmentInfo);
-		Optional<ClaimResponseDto> response=claimService.applyClaim(claimRequestDto);
+		Optional<ClaimResponseDto> response = claimService.applyClaim(claimRequestDto);
 		assertNotNull(response);
 	}
+
 	@Test(expected = PolicyNotExistException.class)
 	public void testApplyClaimInfo() throws InfoException, PolicyNotExistException, UserNotExistException {
-		claimData=Optional.ofNullable(null);
-		hospitalInfo=Optional.of(hospital);
-		ailmentInfo=Optional.ofNullable(ailment);
-		policyInfo=Optional.ofNullable(null);
-		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any())).thenReturn(claimData);
+		claimData = Optional.ofNullable(null);
+		hospitalInfo = Optional.of(hospital);
+		ailmentInfo = Optional.ofNullable(ailment);
+		policyInfo = Optional.ofNullable(null);
+		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any()))
+				.thenReturn(claimData);
 		Mockito.when(hospitalRepository.findByHospitalName(Mockito.anyString())).thenReturn(hospitalInfo);
 		Mockito.when(ailmentRepository.findByAilmentName(Mockito.anyString())).thenReturn(ailmentInfo);
 		Mockito.when(claimRepository.save(Mockito.any())).thenReturn(claim);
 		Mockito.when(policyRepository.findById(Mockito.anyLong())).thenReturn(policyInfo);
-		Optional<ClaimResponseDto> response=claimService.applyClaim(claimRequestDto);
+		Optional<ClaimResponseDto> response = claimService.applyClaim(claimRequestDto);
 		assertNotNull(response);
 	}
+
 	@Test(expected = UserNotExistException.class)
 	public void testApplyClaimUserValidation() throws InfoException, PolicyNotExistException, UserNotExistException {
-		claimData=Optional.ofNullable(null);
-		hospitalInfo=Optional.of(hospital);
-		ailmentInfo=Optional.ofNullable(ailment);
-		policyInfo=Optional.of(policy);
-		userInfo=Optional.ofNullable(null);
-		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any())).thenReturn(claimData);
+		claimData = Optional.ofNullable(null);
+		hospitalInfo = Optional.of(hospital);
+		ailmentInfo = Optional.ofNullable(ailment);
+		policyInfo = Optional.of(policy);
+		userInfo = Optional.ofNullable(null);
+		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any()))
+				.thenReturn(claimData);
 		Mockito.when(hospitalRepository.findByHospitalName(Mockito.anyString())).thenReturn(hospitalInfo);
 		Mockito.when(ailmentRepository.findByAilmentName(Mockito.anyString())).thenReturn(ailmentInfo);
 		Mockito.when(claimRepository.save(Mockito.any())).thenReturn(claim);
 		Mockito.when(policyRepository.findById(Mockito.anyLong())).thenReturn(policyInfo);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
-		Optional<ClaimResponseDto> response=claimService.applyClaim(claimRequestDto);
+		Optional<ClaimResponseDto> response = claimService.applyClaim(claimRequestDto);
 		assertNotNull(response);
 
 	}
+
 	@Test
 	public void testApplyClaimSuccess() throws InfoException, PolicyNotExistException, UserNotExistException {
-		claimData=Optional.ofNullable(null);
-		hospitalInfo=Optional.of(hospital);
-		ailmentInfo=Optional.ofNullable(ailment);
-		policyInfo=Optional.of(policy);
-		userInfo=Optional.ofNullable(user);
-		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any())).thenReturn(claimData);
+		claimData = Optional.ofNullable(null);
+		hospitalInfo = Optional.of(hospital);
+		ailmentInfo = Optional.ofNullable(ailment);
+		policyInfo = Optional.of(policy);
+		userInfo = Optional.ofNullable(user);
+		Mockito.when(claimRepository.findByAdmitDateAndDischargeDate(Mockito.any(), Mockito.any()))
+				.thenReturn(claimData);
 		Mockito.when(hospitalRepository.findByHospitalName(Mockito.anyString())).thenReturn(hospitalInfo);
 		Mockito.when(ailmentRepository.findByAilmentName(Mockito.anyString())).thenReturn(ailmentInfo);
 		Mockito.when(claimRepository.save(Mockito.any())).thenReturn(claim);
 		Mockito.when(policyRepository.findById(Mockito.anyLong())).thenReturn(policyInfo);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
-		Optional<ClaimResponseDto> response=claimService.applyClaim(claimRequestDto);
+		Optional<ClaimResponseDto> response = claimService.applyClaim(claimRequestDto);
 		assertNotNull(response);
 
 	}
+
 	@Test(expected = UserNotExistException.class)
-	public void testUpdateClaimUserValidation() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.ofNullable(null);
+	public void testUpdateClaimUserValidation() throws UserNotExistException, ClaimNotFoundException, InfoException {
+		userInfo = Optional.ofNullable(null);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
-		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
+		Optional<Claim> response = claimService.updateClaimInfo(claimUpdateInfo);
 		assertNotNull(response);
 	}
+
 	@Test(expected = ClaimNotFoundException.class)
-	public void testUpdateClaimInfoValidation() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.of(user);
-		claimData=Optional.ofNullable(null);
+	public void testUpdateClaimInfoValidation() throws UserNotExistException, ClaimNotFoundException, InfoException {
+		userInfo = Optional.of(user);
+		claimData = Optional.ofNullable(null);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
 		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
-		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
+		Optional<Claim> response = claimService.updateClaimInfo(claimUpdateInfo);
 		assertNotNull(response);
 	}
-	@Test
-	public void testUpdateClaimRoleValidation() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.of(user);
-		claimData=Optional.of(claim);
+
+	@Test(expected = InfoException.class)
+	public void testUpdateClaimRoleValidation() throws UserNotExistException, ClaimNotFoundException, InfoException {
+		userInfo = Optional.of(user);
+		claimData = Optional.of(claim);
 		user.setRoleId(1);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
 		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
-		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
+		Optional<Claim> response = claimService.updateClaimInfo(claimUpdateInfo);
 		assertNotNull(response);
 	}
-	@Test
-	public void testUpdateClaimApproverValidation() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.of(user);
-		claimData=Optional.of(claim);
+
+	@Test(expected = InfoException.class)
+	public void testUpdateClaimApproverValidation()
+			throws UserNotExistException, ClaimNotFoundException, InfoException {
+		userInfo = Optional.of(user);
+		claimData = Optional.of(claim);
 		user.setRoleId(2);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
 		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
-		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
+		Optional<Claim> response = claimService.updateClaimInfo(claimUpdateInfo);
 		assertNotNull(response);
 	}
-	@Test(expected = ClaimNotFoundException.class)
-	public void testGetClaimListValidation() throws UserNotExistException, ClaimNotFoundException {
-		claimData=Optional.ofNullable(null);
-		Mockito.when(claimRepository.findByUserId(Mockito.anyInt())).thenReturn(claimData);
-		Optional<List<Claim>> claimList=claimService.getClaimList(user.getUserId(), pageNumber);
-		assertNotNull(claimList);
-	}
-	@Test(expected = UserNotExistException.class)
-	public void testGetClaimListUserValidation() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.ofNullable(null);
-		claimData=Optional.of(claim);	
-		Mockito.when(claimRepository.findByUserId(Mockito.anyInt())).thenReturn(claimData);
-		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
-		Optional<List<Claim>> claimList=claimService.getClaimList(user.getUserId(), pageNumber);
-		assertNotNull(claimList);
-	}
+
 	@Test
-	public void testGetClaimList() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.ofNullable(user);
-		claimData=Optional.of(claim);	
-		Mockito.when(claimRepository.findByUserId(Mockito.anyInt())).thenReturn(claimData);
+	public void testGetClaimListValidation() throws UserNotExistException, ClaimNotFoundException {
+		claimData = Optional.ofNullable(null);
+		Mockito.when(claimRepository.findByRoleId(Mockito.anyInt(), Mockito.any())).thenReturn(claimList);
+		Optional<List<Claim>> response = claimService.getClaimList(claim.getRoleId(), 0);
+		assertNotNull(response);
+	}
+
+	@Test
+	public void testGetListInfo() throws UserNotExistException, ClaimNotFoundException {
+		claimData = Optional.of(claim);
+		claimBook = new PageImpl<Claim>(claimList);
+		claim.setRoleId(1);
+		claimList = claimBook.getContent();
+		claim.setJuniorApproverClaimStatus("Approved");
+		Mockito.when(claimRepository.findByRoleId(Mockito.anyInt(), Mockito.any())).thenReturn(claimList);
+		Optional<List<Claim>> response = claimService.getClaimList(claim.getRoleId(), 0);
+		assertNotNull(response);
+	}
+
+	@Test
+	public void testUpdateInfoPositive() throws UserNotExistException, ClaimNotFoundException, InfoException {
+		userInfo = Optional.of(user);
+		claimData = Optional.of(claim);
+		ailmentInfo = Optional.of(ailment);
+		claim.setEligiblityAmount(5000.0);
+		userInfo.get().setRoleId(1);
+		claimData.get().setJuniorApproverClaimStatus("Pending");
+		claim.setRoleId(1);
+		claim.setReason("Reasonable");
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
-		Optional<List<Claim>> claimList=claimService.getClaimList(user.getUserId(), pageNumber);
-		assertNotNull(claimList);
+		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
+		Mockito.when(ailmentRepository.findById(1)).thenReturn(ailmentInfo);
+		Mockito.when(claimRepository.save(Mockito.any())).thenReturn(claim);
+		Optional<Claim> response = claimService.updateClaimInfo(claimUpdateInfo);
+		assertNotNull(response);
 	}
 }

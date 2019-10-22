@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -66,7 +65,6 @@ public class ClaimServiceImpl implements ClaimService {
 		ClaimResponseDto claimResponse = new ClaimResponseDto();
 		Claim claim = new Claim();
 		Double eligibleAmount;
-		Double maximumAmount;
 		Optional<User> user = null;
 		BeanUtils.copyProperties(claimRequestDto, claim);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -92,15 +90,13 @@ public class ClaimServiceImpl implements ClaimService {
 		claim.setAdmitDate(admitDate);
 		claim.setDischargeDate(dischargeDate);
 		claim.setClaimAmount(claimRequestDto.getTotalAmount());
+		claim.setRoleId(ClaimConstants.JUNIOR_APPROVER);
 		Optional<Ailments> ailment = ailmentRepository.findByAilmentName(claimRequestDto.getNatureOfAilment());
 		if (!ailment.isPresent()) {
 			throw new InfoException(ClaimConstants.AILMENT_NOT_EXIST);
 		}
-		maximumAmount = ailment.get().getMaxAmount();
-		if (eligibleAmount > maximumAmount) {
-			claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
-		}
-		claim.setJuniorApproverClaimStatus(ClaimConstants.ESCALATED_STATUS);
+		claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
+		claim.setAilmentId(ailment.get().getAilmentId());
 		claimRepository.save(claim);
 		Optional<Policy> policy = policyRepository.findById(claimRequestDto.getPolicyId());
 		if (!policy.isPresent()) {
@@ -130,12 +126,13 @@ public class ClaimServiceImpl implements ClaimService {
 	 * @param userId,pageNumber
 	 * @exception UserNotExistException,ClaimNotFoundException
 	 * @return Optional<List<Claim>>
+	 * @throws InfoException
 	 */
 
 	@Override
 	public Optional<Claim> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo)
-			throws UserNotExistException, ClaimNotFoundException {
-		Optional<User> userInfo = userRepository.findById(claimUpdateInfo.getUserId());
+			throws UserNotExistException, ClaimNotFoundException, InfoException {
+		Optional<User> userInfo = userRepository.findById(claimUpdateInfo.getRoleId());
 		if (!userInfo.isPresent()) {
 			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
 		}
@@ -144,58 +141,57 @@ public class ClaimServiceImpl implements ClaimService {
 			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_FOUND);
 		}
 		Claim claim = claimInfo.get();
-		if (userInfo.get().getRoleId().equals(ClaimConstants.JUNIOR_APPROVER)) {
-			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
-			claim.setReason(claimUpdateInfo.getReason());
-			if (!(claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS))) {
-				claim.setJuniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
-			}
-			claimRepository.save(claim);
+		Optional<Ailments> ailmentInfo = ailmentRepository.findById(claim.getAilmentId());
+		if (!ailmentInfo.isPresent()) {
+			throw new InfoException(ClaimConstants.AILMENT_NOT_EXIST);
 		}
-		if (userInfo.get().getRoleId().equals(ClaimConstants.SENIOR_APPROVER)) {
-			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
+		Double maxAmount = ailmentInfo.get().getMaxAmount();
+
+		if (maxAmount > claim.getEligiblityAmount()
+				&& userInfo.get().getRoleId().equals(ClaimConstants.JUNIOR_APPROVER)) {
+			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
+			claim.setJuniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
+			claim.setRoleId(ClaimConstants.JUNIOR_APPROVER);
 			claim.setReason(claimUpdateInfo.getReason());
-			if (!claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS)) {
-				claim.setSeniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
-			}
+			claimRepository.save(claim);
+
+		}
+
+		else if (maxAmount < claim.getEligiblityAmount()
+				&& userInfo.get().getRoleId().equals(ClaimConstants.JUNIOR_APPROVER)) {
+			claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
+			claim.setReason(claimUpdateInfo.getReason());
+			claim.setRoleId(ClaimConstants.SENIOR_APPROVER);
+			claim.setJuniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
 			claimRepository.save(claim);
 		}
 
+		else if (maxAmount < claim.getEligiblityAmount()
+				&& userInfo.get().getRoleId().equals(ClaimConstants.SENIOR_APPROVER)
+				&& claim.getJuniorApproverClaimStatus().equals(ClaimConstants.PENDING_STATUS)) {
+			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
+			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
+			claim.setReason(claimUpdateInfo.getReason());
+			claim.setSeniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
+			claim.setRoleId(ClaimConstants.SENIOR_APPROVER);
+			claimRepository.save(claim);
+		}
 		return Optional.of(claim);
 	}
 
 	@Override
-	public Optional<List<Claim>> getClaimList(Integer userId, Integer pageNumber)
+	public Optional<List<Claim>> getClaimList(Integer roleId, Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException {
-
 		Pageable pageable = PageRequest.of(pageNumber, ClaimConstants.PAGENATION_SIZE);
-		
-		Optional<Claim> claims = claimRepository.findByUserId(userId);
-		if (!claims.isPresent()) {
-			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
-		}
-		Optional<User> user = userRepository.findById(claims.get().getUserId());
-		if (!user.isPresent()) {
-			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
-		}
-		Integer role = user.get().getRoleId();
-		Page<Claim> claim = claimRepository.findAll(pageable);
-		List<Claim> claimInfos = claim.getContent();
+		List<Claim> claimInfos = claimRepository.findByRoleId(roleId, pageable);
 		List<Claim> claimResponse = new ArrayList<>();
-		if (role.equals(ClaimConstants.SENIOR_APPROVER)) {
+		if (roleId.equals(ClaimConstants.SENIOR_APPROVER) || roleId.equals(ClaimConstants.JUNIOR_APPROVER)) {
 			claimInfos.forEach(claimInfo -> {
-				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {
+				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.PENDING_STATUS)) {
 					claimResponse.add(claimInfo);
 				}
 			});
 
-		}
-		if (role.equals(ClaimConstants.JUNIOR_APPROVER)) {
-			claimInfos.forEach(claimInfo -> {
-				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {
-					claimResponse.add(claimInfo);
-				}
-			});
 		}
 
 		return Optional.of(claimResponse);

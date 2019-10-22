@@ -9,4 +9,5 @@ public class UserResponseDto {
 	private Integer statusCode;
 	private String message;
 	private Integer userId;
+	private Integer roleId;
 }

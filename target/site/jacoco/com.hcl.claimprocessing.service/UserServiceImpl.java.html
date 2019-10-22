@@ -38,8 +38,8 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 <span class="fc bfc" id="L38" title="All 2 branches covered.">		if (!user.isPresent()) {</span>
 <span class="fc" id="L39">			throw new UserNotExistException(ClaimConstants.INVALID_CREDENTIAL);</span>
 		}
-<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (!(user.get().getRoleId().equals(ClaimConstants.JUNIOR_Approver))</span>
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">				&amp;&amp; !(user.get().getRoleId().equals(ClaimConstants.Senior_Approver))) {</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (!(user.get().getRoleId().equals(ClaimConstants.JUNIOR_APPROVER))</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">				&amp;&amp; !(user.get().getRoleId().equals(ClaimConstants.SENIOR_APPROVER))) {</span>
 <span class="fc" id="L43">			throw new LoginDeniedException(ClaimConstants.LOGIN_DENIED);</span>
 		}
 

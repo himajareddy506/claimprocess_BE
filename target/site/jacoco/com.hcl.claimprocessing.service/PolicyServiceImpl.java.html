@@ -16,7 +16,7 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 /**
  * This class is used to check whether the user already has the policy
  * 
- * @author Jyoshhna
+ * @author Jyoshna
  *
  */
 

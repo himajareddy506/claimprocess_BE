@@ -18,10 +18,10 @@ public interface ClaimService {
 			throws InfoException, PolicyNotExistException, UserNotExistException;
 
 
-	public Optional<List<Claim>> getClaimList(Integer userId, Integer pageNumber) throws UserNotExistException,ClaimNotFoundException;
+	public Optional<List<Claim>> getClaimList(Integer roleId, Integer pageNumber) throws UserNotExistException,ClaimNotFoundException;
 
 	public Optional<Claim> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo)
-			throws UserNotExistException, ClaimNotFoundException;
+			throws UserNotExistException, ClaimNotFoundException,InfoException;
 
 	
 

@@ -54,11 +54,12 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 <span class="fc" id="L54">		Optional&lt;Policy&gt; policyOptional = policyService.search(policyId);</span>
 <span class="fc bfc" id="L55" title="All 2 branches covered.">		if (policyOptional.isPresent()) {</span>
 <span class="fc" id="L56">			policyResponse.setMessage(ClaimConstants.POLICY_ID_EXIST);</span>
+<span class="fc" id="L57">			policyResponse.setStatusCode(HttpStatus.OK.value());</span>
 		} else {
-<span class="fc" id="L58">			policyResponse.setMessage(ClaimConstants.POLICY_NOT_FOUND_EXCEPTION);</span>
-<span class="fc" id="L59">			policyResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());</span>
+<span class="fc" id="L59">			policyResponse.setMessage(ClaimConstants.POLICY_NOT_FOUND_EXCEPTION);</span>
+<span class="fc" id="L60">			policyResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());</span>
 		}
-<span class="fc" id="L61">		return new ResponseEntity&lt;&gt;(policyResponse, HttpStatus.OK);</span>
+<span class="fc" id="L62">		return new ResponseEntity&lt;&gt;(policyResponse, HttpStatus.OK);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

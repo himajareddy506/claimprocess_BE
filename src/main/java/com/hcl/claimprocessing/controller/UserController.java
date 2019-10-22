@@ -2,6 +2,8 @@ package com.hcl.claimprocessing.controller;
 
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,13 +44,14 @@ public class UserController {
 	 */
 
 	@PostMapping("/")
-	public ResponseEntity<UserResponseDto> loginUser(@RequestBody UserRequestDto loginRequestDto, BindingResult result)
+	public ResponseEntity<UserResponseDto> loginUser(@Valid @RequestBody UserRequestDto loginRequestDto, BindingResult result)
 			throws UserNotExistException, LoginDeniedException {
 
 		UserResponseDto userResponse = new UserResponseDto();
 		Optional<User> user = userService.loginUser(loginRequestDto);
 		user.ifPresent(users -> {
 			userResponse.setUserId(users.getUserId());
+			userResponse.setRoleId(user.get().getRoleId());
 			userResponse.setMessage(ClaimConstants.LOGIN_SUCCESS);
 			userResponse.setStatusCode(HttpStatus.OK.value());
 		});

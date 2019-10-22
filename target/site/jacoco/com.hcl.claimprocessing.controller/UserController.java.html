@@ -2,6 +2,8 @@
 
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 @RestController
 @RequestMapping(&quot;/api/v1/user&quot;)
 @CrossOrigin(allowedHeaders = { &quot;*&quot;, &quot;*/&quot; }, origins = { &quot;*&quot;, &quot;*/&quot; })
-<span class="fc" id="L31">public class UserController {</span>
+<span class="fc" id="L33">public class UserController {</span>
 	@Autowired
 	UserService userService;
 
@@ -42,17 +44,18 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 	 */
 
 	@PostMapping(&quot;/&quot;)
-	public ResponseEntity&lt;UserResponseDto&gt; loginUser(@RequestBody UserRequestDto loginRequestDto, BindingResult result)
+	public ResponseEntity&lt;UserResponseDto&gt; loginUser(@Valid @RequestBody UserRequestDto loginRequestDto, BindingResult result)
 			throws UserNotExistException, LoginDeniedException {
 
-<span class="fc" id="L48">		UserResponseDto userResponse = new UserResponseDto();</span>
-<span class="fc" id="L49">		Optional&lt;User&gt; user = userService.loginUser(loginRequestDto);</span>
-<span class="fc" id="L50">		user.ifPresent(users -&gt; {</span>
-<span class="fc" id="L51">			userResponse.setUserId(users.getUserId());</span>
-<span class="fc" id="L52">			userResponse.setMessage(ClaimConstants.LOGIN_SUCCESS);</span>
-<span class="fc" id="L53">			userResponse.setStatusCode(HttpStatus.OK.value());</span>
-<span class="fc" id="L54">		});</span>
-<span class="fc" id="L55">		return new ResponseEntity&lt;&gt;(userResponse, HttpStatus.OK);</span>
+<span class="fc" id="L50">		UserResponseDto userResponse = new UserResponseDto();</span>
+<span class="fc" id="L51">		Optional&lt;User&gt; user = userService.loginUser(loginRequestDto);</span>
+<span class="fc" id="L52">		user.ifPresent(users -&gt; {</span>
+<span class="fc" id="L53">			userResponse.setUserId(users.getUserId());</span>
+<span class="fc" id="L54">			userResponse.setRoleId(user.get().getRoleId());</span>
+<span class="fc" id="L55">			userResponse.setMessage(ClaimConstants.LOGIN_SUCCESS);</span>
+<span class="fc" id="L56">			userResponse.setStatusCode(HttpStatus.OK.value());</span>
+<span class="fc" id="L57">		});</span>
+<span class="fc" id="L58">		return new ResponseEntity&lt;&gt;(userResponse, HttpStatus.OK);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

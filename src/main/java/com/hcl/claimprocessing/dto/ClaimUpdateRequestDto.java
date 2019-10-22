@@ -9,5 +9,5 @@ public class ClaimUpdateRequestDto {
 	private Long claimId;
 	private String reason;
 	private String claimStatus;
-	private Integer userId;
+	private Integer roleId;
 }

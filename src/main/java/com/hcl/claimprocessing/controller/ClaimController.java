@@ -2,6 +2,9 @@ package com.hcl.claimprocessing.controller;
 
 import java.util.List;
 import java.util.Optional;
+
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
 import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
@@ -53,7 +57,7 @@ public class ClaimController {
 	 * @return It returns ClaimResponseDto
 	 */
 	@PostMapping("/claims")
-	public ResponseEntity<ClaimResponseDto> applyClaim(@RequestBody ClaimRequestDto claimRequestDto,
+	public ResponseEntity<ClaimResponseDto> applyClaim(@Valid @RequestBody ClaimRequestDto claimRequestDto,
 			BindingResult result)
 			throws InfoException, PolicyNotExistException, UserNotExistException {
 		ClaimResponseDto claimResponse=new ClaimResponseDto();
@@ -73,10 +77,11 @@ public class ClaimController {
 	 * @param claimId,reason,claimStatus,userId
 	 * @return It returns CommonResponse
 	 * @exception ClaimNotFoundException,UserNotExistException,ValidInputException
+	 * @throws InfoException 
 	 */
 	@PutMapping("/")
-	public ResponseEntity<CommonResponse> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
-			throws UserNotExistException, ClaimNotFoundException {
+	public ResponseEntity<CommonResponse> updateClaimInfo(@Valid @RequestBody  ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
+			throws UserNotExistException, ClaimNotFoundException, InfoException {
 		logger.info("Inside Update Claim");
 		CommonResponse response = new CommonResponse();
 		Optional<Claim> claimInfo = claimService.updateClaimInfo(claimUpdateInfo);
@@ -97,14 +102,14 @@ public class ClaimController {
 	 */
 
 	@GetMapping("/")
-	public ResponseEntity<List<Claim>> getClaimList(@RequestParam("userId") Integer userId,
+	public ResponseEntity<List<Claim>> getClaimList(@RequestParam("roleId") Integer roleId,
 			@RequestParam("pageNumber") Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException, UserException {
 		logger.info("Inside Get Claim List");
 		if (pageNumber == null || pageNumber < 0) {
 			throw new UserException(ClaimConstants.INVALID_INPUTS);
 		}
-		Optional<List<Claim>> claimList = claimService.getClaimList(userId, pageNumber);
+		Optional<List<Claim>> claimList = claimService.getClaimList(roleId, pageNumber);
 		if (!claimList.isPresent()) {
 			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
 		}

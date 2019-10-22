@@ -13,7 +13,7 @@ import lombok.Setter;
 @Entity
 @Table
 @Getter
-<span class="fc" id="L16">@Setter</span>
+<span class="pc" id="L16">@Setter</span>
 <span class="fc" id="L17">@NoArgsConstructor</span>
 
 public class Claim {
@@ -28,10 +28,11 @@ public class Claim {
 <span class="nc" id="L28">	private String reason;</span>
 <span class="nc" id="L29">	private Long policyId;</span>
 <span class="nc" id="L30">	private String seniorApproverClaimStatus;</span>
-<span class="nc" id="L31">	private String juniorApproverClaimStatus;</span>
+<span class="fc" id="L31">	private String juniorApproverClaimStatus;</span>
 <span class="nc" id="L32">	private String seniorApprovedBy;</span>
 <span class="nc" id="L33">	private String juniorApprovedBy;</span>
-<span class="fc" id="L34">    private Integer userId;</span>
-<span class="nc" id="L35">    private Double eligiblityAmount;</span>
+<span class="fc" id="L34">    private Integer roleId;</span>
+<span class="fc" id="L35">    private Double eligiblityAmount;</span>
+<span class="fc" id="L36">    private Integer ailmentId;</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
