@@ -24,6 +24,7 @@ import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.entity.Hospital;
 import com.hcl.claimprocessing.entity.Policy;
 import com.hcl.claimprocessing.entity.User;
+import com.hcl.claimprocessing.exception.ClaimNotFoundException;
 import com.hcl.claimprocessing.exception.InfoException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
@@ -203,6 +204,40 @@ public class ClaimServiceTest {
 		assertNotNull(response);
 
 	}
-
-
+	@Test(expected = UserNotExistException.class)
+	public void testUpdateClaimUserValidation() throws UserNotExistException, ClaimNotFoundException {
+		userInfo=Optional.ofNullable(null);
+		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
+		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
+		assertNotNull(response);
+	}
+	@Test(expected = ClaimNotFoundException.class)
+	public void testUpdateClaimInfoValidation() throws UserNotExistException, ClaimNotFoundException {
+		userInfo=Optional.ofNullable(user);
+		claimData=Optional.ofNullable(null);
+		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
+		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
+		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
+		assertNotNull(response);
+	}
+	@Test
+	public void testUpdateClaimRoleValidation() throws UserNotExistException, ClaimNotFoundException {
+		userInfo=Optional.ofNullable(user);
+		claimData=Optional.ofNullable(claim);
+		user.setRoleId(1);
+		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
+		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
+		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
+		assertNotNull(response);
+	}
+	@Test
+	public void testUpdateClaimApproverValidation() throws UserNotExistException, ClaimNotFoundException {
+		userInfo=Optional.ofNullable(user);
+		claimData=Optional.ofNullable(claim);
+		user.setRoleId(2);
+		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
+		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
+		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
+		assertNotNull(response);
+	}
 }
