@@ -38,8 +38,8 @@ public class UserServiceImpl implements UserService {
 		if (!user.isPresent()) {
 			throw new UserNotExistException(ClaimConstants.INVALID_CREDENTIAL);
 		}
-		if (!(user.get().getRoleId().equals(ClaimConstants.Approver))
-				&& !(user.get().getRoleId().equals(ClaimConstants.seniorApprover))) {
+		if (!(user.get().getRoleId().equals(ClaimConstants.JUNIOR_Approver))
+				&& !(user.get().getRoleId().equals(ClaimConstants.Senior_Approver))) {
 			throw new LoginDeniedException(ClaimConstants.LOGIN_DENIED);
 		}
 

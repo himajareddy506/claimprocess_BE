@@ -141,14 +141,14 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 <span class="fc" id="L141">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_FOUND);</span>
 		}
 <span class="fc" id="L143">		Claim claim = claimInfo.get();</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (userInfo.get().getRoleId().equals(ClaimConstants.Approver)) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (userInfo.get().getRoleId().equals(ClaimConstants.JUNIOR_Approver)) {</span>
 <span class="fc" id="L145">			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());</span>
 <span class="fc" id="L146">			claim.setReason(claimUpdateInfo.getReason());</span>
 <span class="pc bpc" id="L147" title="1 of 2 branches missed.">			if (!(claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS))) {</span>
 <span class="nc" id="L148">				claim.setJuniorApprovedBy(userInfo.get().getFirstName() + &quot; &quot; + userInfo.get().getLastName());</span>
 			}
 		}
-<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (userInfo.get().getRoleId().equals(ClaimConstants.seniorApprover)) {</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (userInfo.get().getRoleId().equals(ClaimConstants.Senior_Approver)) {</span>
 <span class="fc" id="L152">			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());</span>
 <span class="fc" id="L153">			claim.setReason(claimUpdateInfo.getReason());</span>
 <span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (!claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS)) {</span>
@@ -163,18 +163,18 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 	public Optional&lt;List&lt;Claim&gt;&gt; getClaimList(Integer userId, Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException {
 
-<span class="nc" id="L166">		Optional&lt;Claim&gt; claims = claimRepository.findByUserId(userId);</span>
-<span class="nc bnc" id="L167" title="All 2 branches missed.">		if (!claims.isPresent()) {</span>
-<span class="nc" id="L168">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
+<span class="fc" id="L166">		Optional&lt;Claim&gt; claims = claimRepository.findByUserId(userId);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		if (!claims.isPresent()) {</span>
+<span class="fc" id="L168">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
 		}
-<span class="nc" id="L170">		Optional&lt;User&gt; user = userRepository.findById(claims.get().getUserId());</span>
-<span class="nc bnc" id="L171" title="All 2 branches missed.">		if (!user.isPresent()) {</span>
-<span class="nc" id="L172">			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);</span>
+<span class="fc" id="L170">		Optional&lt;User&gt; user = userRepository.findById(claims.get().getUserId());</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		if (!user.isPresent()) {</span>
+<span class="fc" id="L172">			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);</span>
 		}
-<span class="nc" id="L174">		Integer role = user.get().getRoleId();</span>
-<span class="nc" id="L175">		List&lt;Claim&gt; claimInfos = claimRepository.findAll();</span>
-<span class="nc" id="L176">		List&lt;Claim&gt; claimResponse = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">		if (role.equals(ClaimConstants.seniorApprover)) {</span>
+<span class="fc" id="L174">		Integer role = user.get().getRoleId();</span>
+<span class="fc" id="L175">		List&lt;Claim&gt; claimInfos = claimRepository.findAll();</span>
+<span class="fc" id="L176">		List&lt;Claim&gt; claimResponse = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">		if (role.equals(ClaimConstants.Senior_Approver)) {</span>
 <span class="nc" id="L178">			claimInfos.forEach(claimInfo -&gt; {</span>
 <span class="nc bnc" id="L179" title="All 2 branches missed.">				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {</span>
 <span class="nc" id="L180">					claimResponse.add(claimInfo);</span>
@@ -182,15 +182,15 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 <span class="nc" id="L182">			});</span>
 
 		}
-<span class="nc bnc" id="L185" title="All 2 branches missed.">		if (role.equals(ClaimConstants.Approver)) {</span>
-<span class="nc" id="L186">			claimInfos.forEach(claimInfo -&gt; {</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">		if (role.equals(ClaimConstants.JUNIOR_Approver)) {</span>
+<span class="fc" id="L186">			claimInfos.forEach(claimInfo -&gt; {</span>
 <span class="nc bnc" id="L187" title="All 2 branches missed.">				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {</span>
 <span class="nc" id="L188">					claimResponse.add(claimInfo);</span>
 				}
 <span class="nc" id="L190">			});</span>
 		}
 
-<span class="nc" id="L193">		return Optional.of(claimResponse);</span>
+<span class="fc" id="L193">		return Optional.of(claimResponse);</span>
 	}
 
 }
