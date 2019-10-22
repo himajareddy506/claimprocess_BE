@@ -54,6 +54,7 @@ public class PolicyController {
 		Optional<Policy> policyOptional = policyService.search(policyId);
 		if (policyOptional.isPresent()) {
 			policyResponse.setMessage(ClaimConstants.POLICY_ID_EXIST);
+			policyResponse.setStatusCode(HttpStatus.OK.value());
 		} else {
 			policyResponse.setMessage(ClaimConstants.POLICY_NOT_FOUND_EXCEPTION);
 			policyResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());

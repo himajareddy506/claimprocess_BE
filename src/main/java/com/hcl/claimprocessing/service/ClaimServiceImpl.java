@@ -8,6 +8,9 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -163,6 +166,8 @@ public class ClaimServiceImpl implements ClaimService {
 	public Optional<List<Claim>> getClaimList(Integer userId, Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException {
 
+		Pageable pageable = PageRequest.of(pageNumber, ClaimConstants.PAGENATION_SIZE);
+		
 		Optional<Claim> claims = claimRepository.findByUserId(userId);
 		if (!claims.isPresent()) {
 			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
@@ -172,7 +177,8 @@ public class ClaimServiceImpl implements ClaimService {
 			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
 		}
 		Integer role = user.get().getRoleId();
-		List<Claim> claimInfos = claimRepository.findAll();
+		Page<Claim> claim = claimRepository.findAll(pageable);
+		List<Claim> claimInfos = claim.getContent();
 		List<Claim> claimResponse = new ArrayList<>();
 		if (role.equals(ClaimConstants.Senior_Approver)) {
 			claimInfos.forEach(claimInfo -> {
