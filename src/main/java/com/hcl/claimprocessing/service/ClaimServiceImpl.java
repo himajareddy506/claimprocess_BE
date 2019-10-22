@@ -97,7 +97,6 @@ public class ClaimServiceImpl implements ClaimService {
 		if (eligibleAmount > maximumAmount) {
 			claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);
 		}
-		claim.setJuniorApproverClaimStatus(ClaimConstants.ESCALATED_STATUS);
 		claimRepository.save(claim);
 		Optional<Policy> policy = policyRepository.findById(claimRequestDto.getPolicyId());
 		if (!policy.isPresent()) {
