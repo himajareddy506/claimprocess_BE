@@ -65,8 +65,8 @@ public class ClaimServiceImpl implements ClaimService {
 			throws InfoException, PolicyNotExistException, UserNotExistException {
 		ClaimResponseDto claimResponse = new ClaimResponseDto();
 		Claim claim = new Claim();
-		Double eligibleAmount = 0.0;
-		Double maximumAmount = 0.0;
+		Double eligibleAmount;
+		Double maximumAmount;
 		Optional<User> user = null;
 		BeanUtils.copyProperties(claimRequestDto, claim);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -144,19 +144,21 @@ public class ClaimServiceImpl implements ClaimService {
 			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_FOUND);
 		}
 		Claim claim = claimInfo.get();
-		if (userInfo.get().getRoleId().equals(ClaimConstants.JUNIOR_Approver)) {
+		if (userInfo.get().getRoleId().equals(ClaimConstants.JUNIOR_APPROVER)) {
 			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
 			claim.setReason(claimUpdateInfo.getReason());
 			if (!(claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS))) {
 				claim.setJuniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
 			}
+			claimRepository.save(claim);
 		}
-		if (userInfo.get().getRoleId().equals(ClaimConstants.Senior_Approver)) {
+		if (userInfo.get().getRoleId().equals(ClaimConstants.SENIOR_APPROVER)) {
 			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
 			claim.setReason(claimUpdateInfo.getReason());
 			if (!claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS)) {
 				claim.setSeniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
 			}
+			claimRepository.save(claim);
 		}
 
 		return Optional.of(claim);
@@ -180,7 +182,7 @@ public class ClaimServiceImpl implements ClaimService {
 		Page<Claim> claim = claimRepository.findAll(pageable);
 		List<Claim> claimInfos = claim.getContent();
 		List<Claim> claimResponse = new ArrayList<>();
-		if (role.equals(ClaimConstants.Senior_Approver)) {
+		if (role.equals(ClaimConstants.SENIOR_APPROVER)) {
 			claimInfos.forEach(claimInfo -> {
 				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {
 					claimResponse.add(claimInfo);
@@ -188,7 +190,7 @@ public class ClaimServiceImpl implements ClaimService {
 			});
 
 		}
-		if (role.equals(ClaimConstants.JUNIOR_Approver)) {
+		if (role.equals(ClaimConstants.JUNIOR_APPROVER)) {
 			claimInfos.forEach(claimInfo -> {
 				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {
 					claimResponse.add(claimInfo);
