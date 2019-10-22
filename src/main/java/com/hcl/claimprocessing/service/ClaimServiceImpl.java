@@ -147,6 +147,7 @@ public class ClaimServiceImpl implements ClaimService {
 			if (!(claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS))) {
 				claim.setJuniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
 			}
+			claimRepository.save(claim);
 		}
 		if (userInfo.get().getRoleId().equals(ClaimConstants.SENIOR_APPROVER)) {
 			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());
@@ -154,6 +155,7 @@ public class ClaimServiceImpl implements ClaimService {
 			if (!claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS)) {
 				claim.setSeniorApprovedBy(userInfo.get().getFirstName() + " " + userInfo.get().getLastName());
 			}
+			claimRepository.save(claim);
 		}
 
 		return Optional.of(claim);
