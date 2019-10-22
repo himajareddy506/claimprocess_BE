@@ -22,7 +22,7 @@ import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
 import com.hcl.claimprocessing.dto.CommonResponse;
 import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.exception.ClaimNotFoundException;
-import com.hcl.claimprocessing.exception.InfoExistException;
+import com.hcl.claimprocessing.exception.InfoException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
@@ -55,11 +55,15 @@ public class ClaimController {
 	@PostMapping("/claims")
 	public ResponseEntity<ClaimResponseDto> applyClaim(@RequestBody ClaimRequestDto claimRequestDto,
 			BindingResult result)
-			throws ValidInputException, InfoExistException, PolicyNotExistException, UserNotExistException {
-
+			throws InfoException, PolicyNotExistException, UserNotExistException {
+		ClaimResponseDto claimResponse=new ClaimResponseDto();
 		logger.info("Inside Apply Claim");
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
-		return new ResponseEntity<>(claimInfo.get(), HttpStatus.CREATED);
+		if(claimInfo.isPresent()) {
+			claimResponse=claimInfo.get();
+		}
+			
+			return new ResponseEntity<>(claimResponse, HttpStatus.CREATED);
 	}
 
 	/**
@@ -72,7 +76,7 @@ public class ClaimController {
 	 */
 	@PutMapping("/")
 	public ResponseEntity<CommonResponse> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
-			throws ValidInputException, UserNotExistException, ClaimNotFoundException {
+			throws UserNotExistException, ClaimNotFoundException {
 		logger.info("Inside Update Claim");
 		CommonResponse response = new CommonResponse();
 		Optional<Claim> claimInfo = claimService.updateClaimInfo(claimUpdateInfo);

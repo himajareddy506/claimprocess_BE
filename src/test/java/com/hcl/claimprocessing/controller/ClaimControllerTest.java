@@ -20,7 +20,7 @@ import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
 import com.hcl.claimprocessing.dto.CommonResponse;
 import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.exception.ClaimNotFoundException;
-import com.hcl.claimprocessing.exception.InfoExistException;
+import com.hcl.claimprocessing.exception.InfoException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
@@ -73,7 +73,7 @@ public class ClaimControllerTest {
 		claim.setDetailsOfDischargeSummary("Discharged");
 		claim.setDischargeDate(LocalDate.parse("2019-05-07"));
 		claim.setEligiblityAmount(1500.0);
-		claim.setHospitalName("Apollo");
+		claim.setHospitalId(1);
 		claim.setJuniorApprovedBy("Keshav");
 		claim.setSeniorApprovedBy("Kabhil");
 		claim.setJuniorApproverClaimStatus("Pending");
@@ -85,7 +85,7 @@ public class ClaimControllerTest {
 		
 	}
 	@Test
-	public void testApplyClaim() throws InfoExistException, PolicyNotExistException, UserNotExistException, ValidInputException {
+	public void testApplyClaim() throws InfoException, PolicyNotExistException, UserNotExistException, ValidInputException {
 		claimInfo=Optional.of(claimResponse);
 		Mockito.when(claimService.applyClaim(Mockito.any())).thenReturn(claimInfo);
 		ResponseEntity<ClaimResponseDto> claimResponses=claimController.applyClaim(claimRequestDto, result);

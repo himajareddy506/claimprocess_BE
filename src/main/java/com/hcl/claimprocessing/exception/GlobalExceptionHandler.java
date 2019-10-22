@@ -9,59 +9,59 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	@ExceptionHandler(InfoExistException.class)
-	public ResponseEntity<ErrorResponse> InfoExistException(Exception e) {
+	@ExceptionHandler(InfoException.class)
+	public ResponseEntity<ErrorResponse> infoExistException(Exception e) {
 
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(PolicyNotExistException.class)
-	public ResponseEntity<ErrorResponse> PolicyNotExistException(Exception e) {
+	public ResponseEntity<ErrorResponse> policyNotExistException(Exception e) {
 
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(UserNotExistException.class)
-	public ResponseEntity<ErrorResponse> UserNotExistException(Exception e) {
+	public ResponseEntity<ErrorResponse> userNotExistException(Exception e) {
 
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(ValidInputException.class)
-	public ResponseEntity<ErrorResponse> ValidInputException(Exception e) {
+	public ResponseEntity<ErrorResponse> validInputException(Exception e) {
 
-		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
+		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(PolicyNotFoundException.class)
-	public ResponseEntity<ErrorResponse> PolicyNotFoundException(Exception e) {
+	public ResponseEntity<ErrorResponse> policyNotFoundException(Exception e) {
 
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(ClaimNotFoundException.class)
-	public ResponseEntity<ErrorResponse> ClaimNotFoundException(Exception e) {
+	public ResponseEntity<ErrorResponse> claimNotFoundException(Exception e) {
 
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(UserException.class)
-	public ResponseEntity<ErrorResponse> UserException(Exception e) {
+	public ResponseEntity<ErrorResponse> userException(Exception e) {
 
 		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(LoginDeniedException.class)
-	public ResponseEntity<ErrorResponse> LoginDeniedException(Exception e) {
+	public ResponseEntity<ErrorResponse> loginDeniedException(Exception e) {
 
-		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
+		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());
 		return new ResponseEntity<>(error, HttpStatus.OK);
 	}
 

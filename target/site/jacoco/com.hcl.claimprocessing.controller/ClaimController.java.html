@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClaimController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claimprocessing</a> &gt; <a href="index.source.html" class="el_package">com.hcl.claimprocessing.controller</a> &gt; <span class="el_source">ClaimController.java</span></div><h1>ClaimController.java</h1><pre class="source lang-java linenums">package com.hcl.claimprocessing.controller;
+
+import java.util.List;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import com.hcl.claimprocessing.dto.ClaimRequestDto;
+import com.hcl.claimprocessing.dto.ClaimResponseDto;
+import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
+import com.hcl.claimprocessing.dto.CommonResponse;
+import com.hcl.claimprocessing.entity.Claim;
+import com.hcl.claimprocessing.exception.ClaimNotFoundException;
+import com.hcl.claimprocessing.exception.InfoExistException;
+import com.hcl.claimprocessing.exception.PolicyNotExistException;
+import com.hcl.claimprocessing.exception.UserException;
+import com.hcl.claimprocessing.exception.UserNotExistException;
+import com.hcl.claimprocessing.exception.ValidInputException;
+import com.hcl.claimprocessing.service.ClaimService;
+import com.hcl.claimprocessing.utils.ClaimConstants;
+
+/**
+ * This class is used to avail claim by the user. The claim Status can be
+ * updated by the Approver/PO The List of claim under an Approver can be
+ * retrieved
+ * 
+ * @author Subashri
+ */
+@RestController
+@RequestMapping(&quot;/api/v1&quot;)
+@CrossOrigin(allowedHeaders = { &quot;*&quot;, &quot;*/&quot; }, origins = { &quot;*&quot;, &quot;*/&quot; })
+<span class="fc" id="L43">public class ClaimController {</span>
+	@Autowired
+	ClaimService claimService;
+<span class="fc" id="L46">	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);</span>
+
+	/**
+	 * This method is used to avail claim by the user who have policy/insurance .
+	 * 
+	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
+	 * @exception ValidInputException,InfoExistException,PolicyNotExistException,UserNotExistException
+	 * @return It returns ClaimResponseDto
+	 */
+	@PostMapping(&quot;/claims&quot;)
+	public ResponseEntity&lt;ClaimResponseDto&gt; applyClaim(@RequestBody ClaimRequestDto claimRequestDto,
+			BindingResult result)
+			throws InfoExistException, PolicyNotExistException, UserNotExistException {
+<span class="fc" id="L59">		ClaimResponseDto claimResponse=new ClaimResponseDto();</span>
+<span class="fc" id="L60">		logger.info(&quot;Inside Apply Claim&quot;);</span>
+<span class="fc" id="L61">		Optional&lt;ClaimResponseDto&gt; claimInfo = claimService.applyClaim(claimRequestDto);</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if(claimInfo.isPresent()) {</span>
+<span class="fc" id="L63">			claimResponse=claimInfo.get();</span>
+		}
+			
+<span class="fc" id="L66">			return new ResponseEntity&lt;&gt;(claimResponse, HttpStatus.CREATED);</span>
+	}
+
+	/**
+	 * This method is used to update the claimInfo of the user who have
+	 * policy/insurance .
+	 * 
+	 * @param claimId,reason,claimStatus,userId
+	 * @return It returns CommonResponse
+	 * @exception ClaimNotFoundException,UserNotExistException,ValidInputException
+	 */
+	@PutMapping(&quot;/&quot;)
+	public ResponseEntity&lt;CommonResponse&gt; updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
+			throws UserNotExistException, ClaimNotFoundException {
+<span class="fc" id="L80">		logger.info(&quot;Inside Update Claim&quot;);</span>
+<span class="fc" id="L81">		CommonResponse response = new CommonResponse();</span>
+<span class="fc" id="L82">		Optional&lt;Claim&gt; claimInfo = claimService.updateClaimInfo(claimUpdateInfo);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		if (claimInfo.isPresent()) {</span>
+<span class="fc" id="L84">			response.setMessage(ClaimConstants.CLAIM_UPDATE_SUCCESS);</span>
+<span class="fc" id="L85">			response.setStatusCode(HttpStatus.OK.value());</span>
+		}
+<span class="fc" id="L87">		return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
+	}
+
+	/**
+	 * This method is used to avail claim info of the logged-in use Approver/Senior
+	 * Approver .
+	 * 
+	 * @param userId,pageNumber
+	 * @exception UserNotExistException,ClaimNotFoundException,UserException
+	 * @return It returns &lt;List&lt;Claim&gt;
+	 */
+
+	@GetMapping(&quot;/&quot;)
+	public ResponseEntity&lt;List&lt;Claim&gt;&gt; getClaimList(@RequestParam(&quot;userId&quot;) Integer userId,
+			@RequestParam(&quot;pageNumber&quot;) Integer pageNumber)
+			throws UserNotExistException, ClaimNotFoundException, UserException {
+<span class="fc" id="L103">		logger.info(&quot;Inside Get Claim List&quot;);</span>
+<span class="pc bpc" id="L104" title="1 of 4 branches missed.">		if (pageNumber == null || pageNumber &lt; 0) {</span>
+<span class="fc" id="L105">			throw new UserException(ClaimConstants.INVALID_INPUTS);</span>
+		}
+<span class="fc" id="L107">		Optional&lt;List&lt;Claim&gt;&gt; claimList = claimService.getClaimList(userId, pageNumber);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (!claimList.isPresent()) {</span>
+<span class="nc" id="L109">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
+		}
+<span class="fc" id="L111">		return new ResponseEntity&lt;&gt;(claimList.get(), HttpStatus.OK);</span>
+
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

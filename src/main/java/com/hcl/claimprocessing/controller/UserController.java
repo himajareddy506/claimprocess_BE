@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.hcl.claimprocessing.dto.UserRequestDto;
 import com.hcl.claimprocessing.dto.UserResponseDto;
 import com.hcl.claimprocessing.entity.User;
 import com.hcl.claimprocessing.exception.LoginDeniedException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
-import com.hcl.claimprocessing.exception.ValidInputException;
 import com.hcl.claimprocessing.service.UserService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
@@ -43,7 +43,7 @@ public class UserController {
 
 	@PostMapping("/")
 	public ResponseEntity<UserResponseDto> loginUser(@RequestBody UserRequestDto loginRequestDto, BindingResult result)
-			throws ValidInputException, UserNotExistException, LoginDeniedException {
+			throws UserNotExistException, LoginDeniedException {
 
 		UserResponseDto userResponse = new UserResponseDto();
 		Optional<User> user = userService.loginUser(loginRequestDto);

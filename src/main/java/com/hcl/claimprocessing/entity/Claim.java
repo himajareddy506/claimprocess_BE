@@ -22,7 +22,7 @@ public class Claim {
 	private Long claimId;
 	private LocalDate admitDate;
 	private LocalDate dischargeDate;
-	private String hospitalName;
+	private Integer hospitalId;
 	private Double claimAmount;
 	private String detailsOfDischargeSummary;
 	private String reason;
