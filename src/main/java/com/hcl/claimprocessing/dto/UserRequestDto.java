@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.Columns;
 
 import lombok.Getter;
 import lombok.Setter;

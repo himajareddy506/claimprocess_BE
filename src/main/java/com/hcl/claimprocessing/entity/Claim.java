@@ -22,7 +22,7 @@ public class Claim {
 	private Long claimId;
 	private LocalDate admitDate;
 	private LocalDate dischargeDate;
-	private String hospitalName;
+	private Integer hospitalId;
 	private Double claimAmount;
 	private String detailsOfDischargeSummary;
 	private String reason;
@@ -31,5 +31,6 @@ public class Claim {
 	private String juniorApproverClaimStatus;
 	private String seniorApprovedBy;
 	private String juniorApprovedBy;
-
+    private Integer userId;
+    private Double eligiblityAmount;
 }

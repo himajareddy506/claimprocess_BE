@@ -2,7 +2,8 @@ package com.hcl.claimprocessing.controller;
 
 import java.util.List;
 import java.util.Optional;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
 import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
+import com.hcl.claimprocessing.dto.CommonResponse;
 import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.exception.ClaimNotFoundException;
-import com.hcl.claimprocessing.exception.InfoExistException;
+import com.hcl.claimprocessing.exception.InfoException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
@@ -29,7 +31,9 @@ import com.hcl.claimprocessing.service.ClaimService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class is used to avail claim by the user.
+ * This class is used to avail claim by the user. The claim Status can be
+ * updated by the Approver/PO The List of claim under an Approver can be
+ * retrieved
  * 
  * @author Subashri
  */
@@ -39,24 +43,27 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 public class ClaimController {
 	@Autowired
 	ClaimService claimService;
+	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
 
 	/**
 	 * This method is used to avail claim by the user who have policy/insurance .
 	 * 
 	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
 	 * @exception ValidInputException,InfoExistException,PolicyNotExistException,UserNotExistException
+	 * @return It returns ClaimResponseDto
 	 */
 	@PostMapping("/claims")
 	public ResponseEntity<ClaimResponseDto> applyClaim(@RequestBody ClaimRequestDto claimRequestDto,
 			BindingResult result)
-			throws ValidInputException, InfoExistException, PolicyNotExistException, UserNotExistException {
-		if (result.hasErrors()) {
-			throw new ValidInputException(
-					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
-
-		}
+			throws InfoException, PolicyNotExistException, UserNotExistException {
+		ClaimResponseDto claimResponse=new ClaimResponseDto();
+		logger.info("Inside Apply Claim");
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
-		return new ResponseEntity<>(claimInfo.get(), HttpStatus.CREATED);
+		if(claimInfo.isPresent()) {
+			claimResponse=claimInfo.get();
+		}
+			
+			return new ResponseEntity<>(claimResponse, HttpStatus.CREATED);
 	}
 
 	/**
@@ -64,21 +71,36 @@ public class ClaimController {
 	 * policy/insurance .
 	 * 
 	 * @param claimId,reason,claimStatus,userId
-	 * @exception ClaimNotFoundException,UserNotExistException
+	 * @return It returns CommonResponse
+	 * @exception ClaimNotFoundException,UserNotExistException,ValidInputException
 	 */
 	@PutMapping("/")
-	public void updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
-			throws ValidInputException {
-		if (result.hasErrors()) {
-			throw new ValidInputException(
-					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
+	public ResponseEntity<CommonResponse> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
+			throws UserNotExistException, ClaimNotFoundException {
+		logger.info("Inside Update Claim");
+		CommonResponse response = new CommonResponse();
+		Optional<Claim> claimInfo = claimService.updateClaimInfo(claimUpdateInfo);
+		if (claimInfo.isPresent()) {
+			response.setMessage(ClaimConstants.CLAIM_UPDATE_SUCCESS);
+			response.setStatusCode(HttpStatus.OK.value());
 		}
-
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+
+	/**
+	 * This method is used to avail claim info of the logged-in use Approver/Senior
+	 * Approver .
+	 * 
+	 * @param userId,pageNumber
+	 * @exception UserNotExistException,ClaimNotFoundException,UserException
+	 * @return It returns <List<Claim>
+	 */
+
 	@GetMapping("/")
 	public ResponseEntity<List<Claim>> getClaimList(@RequestParam("userId") Integer userId,
 			@RequestParam("pageNumber") Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException, UserException {
+		logger.info("Inside Get Claim List");
 		if (pageNumber == null || pageNumber < 0) {
 			throw new UserException(ClaimConstants.INVALID_INPUTS);
 		}
