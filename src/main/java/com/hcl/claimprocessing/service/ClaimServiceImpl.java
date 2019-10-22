@@ -62,8 +62,8 @@ public class ClaimServiceImpl implements ClaimService {
 			throws InfoException, PolicyNotExistException, UserNotExistException {
 		ClaimResponseDto claimResponse = new ClaimResponseDto();
 		Claim claim = new Claim();
-		Double eligibleAmount = 0.0;
-		Double maximumAmount = 0.0;
+		Double eligibleAmount;
+		Double maximumAmount;
 		Optional<User> user = null;
 		BeanUtils.copyProperties(claimRequestDto, claim);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
