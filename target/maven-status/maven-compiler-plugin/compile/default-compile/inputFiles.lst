@@ -20,7 +20,7 @@ C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimproce
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\ClaimprocessingApplication.java
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\repository\UserRepository.java
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\entity\Diagnosis.java
-C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\exception\InfoExistException.java
+C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\repository\HospitalRepository.java
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\service\UserService.java
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\service\UserServiceImpl.java
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\dto\ClaimRequestDto.java
@@ -35,4 +35,6 @@ C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimproce
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\exception\PolicyNotFoundException.java
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\dto\ClaimUpdateRequestDto.java
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\config\SwaggerConfig.java
+C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\exception\InfoException.java
 C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\exception\UserException.java
+C:\Users\User1\Documents\fourth\claimprocess_BE\src\main\java\com\hcl\claimprocessing\repository\AilmentRepository.java

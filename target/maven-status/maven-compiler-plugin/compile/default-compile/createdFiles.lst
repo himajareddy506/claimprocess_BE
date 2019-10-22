@@ -5,7 +5,6 @@ com\hcl\claimprocessing\exception\ErrorResponse.class
 com\hcl\claimprocessing\dto\UserResponseDto.class
 com\hcl\claimprocessing\service\PolicyService.class
 com\hcl\claimprocessing\entity\Diagnosis.class
-com\hcl\claimprocessing\exception\InfoExistException.class
 com\hcl\claimprocessing\exception\ClaimNotFoundException.class
 com\hcl\claimprocessing\repository\UserRepository.class
 com\hcl\claimprocessing\dto\ClaimUpdateRequestDto.class
@@ -21,12 +20,15 @@ com\hcl\claimprocessing\service\PolicyServiceImpl.class
 com\hcl\claimprocessing\utils\ClaimConstants.class
 com\hcl\claimprocessing\exception\ValidInputException.class
 com\hcl\claimprocessing\exception\GlobalExceptionHandler.class
+com\hcl\claimprocessing\exception\InfoException.class
 com\hcl\claimprocessing\exception\UserNotExistException.class
+com\hcl\claimprocessing\repository\AilmentRepository.class
 com\hcl\claimprocessing\entity\Claim.class
 com\hcl\claimprocessing\ClaimprocessingApplication.class
 com\hcl\claimprocessing\service\UserService.class
 com\hcl\claimprocessing\entity\Policy.class
 com\hcl\claimprocessing\entity\Ailments.class
+com\hcl\claimprocessing\repository\HospitalRepository.class
 com\hcl\claimprocessing\repository\PolicyRepository.class
 com\hcl\claimprocessing\controller\PolicyController.class
 com\hcl\claimprocessing\entity\Hospital.class

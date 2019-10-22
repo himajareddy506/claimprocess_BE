@@ -5,21 +5,27 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
 import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
+import com.hcl.claimprocessing.entity.Ailments;
 import com.hcl.claimprocessing.entity.Claim;
+import com.hcl.claimprocessing.entity.Hospital;
 import com.hcl.claimprocessing.entity.Policy;
 import com.hcl.claimprocessing.entity.User;
 import com.hcl.claimprocessing.exception.ClaimNotFoundException;
-import com.hcl.claimprocessing.exception.InfoExistException;
+import com.hcl.claimprocessing.exception.InfoException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
+import com.hcl.claimprocessing.repository.AilmentRepository;
 import com.hcl.claimprocessing.repository.ClaimRepository;
+import com.hcl.claimprocessing.repository.HospitalRepository;
 import com.hcl.claimprocessing.repository.PolicyRepository;
 import com.hcl.claimprocessing.repository.UserRepository;
 import com.hcl.claimprocessing.utils.ClaimConstants;
@@ -31,13 +37,17 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
  */
 
 @Service
-<span class="nc" id="L34">public class ClaimServiceImpl implements ClaimService {</span>
+<span class="fc" id="L40">public class ClaimServiceImpl implements ClaimService {</span>
 	@Autowired
 	ClaimRepository claimRepository;
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
 	PolicyRepository policyRepository;
+	@Autowired
+	HospitalRepository hospitalRepository;
+	@Autowired
+	AilmentRepository ailmentRepository;
 
 	/**
 	 * This method is used to avail claim by the user who have policy/insurance .
@@ -49,47 +59,68 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 
 	@Override
 	public Optional&lt;ClaimResponseDto&gt; applyClaim(ClaimRequestDto claimRequestDto)
-			throws InfoExistException, PolicyNotExistException, UserNotExistException {
-<span class="nc" id="L53">		ClaimResponseDto claimResponse = new ClaimResponseDto();</span>
-<span class="nc" id="L54">		Claim claim = new Claim();</span>
-<span class="nc" id="L55">		Optional&lt;User&gt; user = null;</span>
-<span class="nc" id="L56">		BeanUtils.copyProperties(claimRequestDto, claim);</span>
-<span class="nc" id="L57">		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;yyyy/MM/dd&quot;);</span>
-<span class="nc" id="L58">		LocalDate admitDate = LocalDate.parse(claimRequestDto.getAdmitDate(), formatter);</span>
-<span class="nc" id="L59">		LocalDate dischargeDate = LocalDate.parse(claimRequestDto.getDischargeDate(), formatter);</span>
-<span class="nc" id="L60">		Optional&lt;Claim&gt; claimInfo = claimRepository.findByAdmitDateAndDischargeDate(admitDate, dischargeDate);</span>
-<span class="nc bnc" id="L61" title="All 2 branches missed.">		if (claimInfo.isPresent()) {</span>
-<span class="nc" id="L62">			throw new InfoExistException(ClaimConstants.CLAIM_INFO_EXIST);</span>
+			throws InfoException, PolicyNotExistException, UserNotExistException {
+<span class="fc" id="L63">		ClaimResponseDto claimResponse = new ClaimResponseDto();</span>
+<span class="fc" id="L64">		Claim claim = new Claim();</span>
+<span class="fc" id="L65">		Double eligibleAmount = 0.0;</span>
+<span class="fc" id="L66">		Double maximumAmount = 0.0;</span>
+<span class="fc" id="L67">		Optional&lt;User&gt; user = null;</span>
+<span class="fc" id="L68">		BeanUtils.copyProperties(claimRequestDto, claim);</span>
+<span class="fc" id="L69">		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;yyyy/MM/dd&quot;);</span>
+<span class="fc" id="L70">		LocalDate admitDate = LocalDate.parse(claimRequestDto.getAdmitDate(), formatter);</span>
+<span class="fc" id="L71">		LocalDate dischargeDate = LocalDate.parse(claimRequestDto.getDischargeDate(), formatter);</span>
+<span class="fc" id="L72">		Optional&lt;Claim&gt; claimInfo = claimRepository.findByAdmitDateAndDischargeDate(admitDate, dischargeDate);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (claimInfo.isPresent()) {</span>
+<span class="fc" id="L74">			throw new InfoException(ClaimConstants.CLAIM_INFO_EXIST);</span>
 		}
-<span class="nc" id="L64">		long policyNumber = (long) Math.floor(Math.random() * 9_000_000_000L) + 1_000_000_000L;</span>
-<span class="nc" id="L65">		claim.setClaimId(policyNumber);</span>
-<span class="nc" id="L66">		claim.setAdmitDate(admitDate);</span>
-<span class="nc" id="L67">		claim.setDischargeDate(dischargeDate);</span>
-<span class="nc" id="L68">		claim.setClaimAmount(claimRequestDto.getTotalAmount());</span>
-<span class="nc" id="L69">		claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);</span>
-<span class="nc" id="L70">		claimRepository.save(claim);</span>
-<span class="nc" id="L71">		Optional&lt;Policy&gt; policy = policyRepository.findById(claimRequestDto.getPolicyId());</span>
-<span class="nc bnc" id="L72" title="All 2 branches missed.">		if (!policy.isPresent()) {</span>
-<span class="nc" id="L73">			throw new PolicyNotExistException(ClaimConstants.POLICY_INFO_DOESNOT_EXIST);</span>
+<span class="fc" id="L76">		long policyNumber = (long) Math.floor(Math.random() * 9_000_000_000L) + 1_000_000_000L;</span>
+<span class="fc" id="L77">		Optional&lt;Hospital&gt; hospitalInfo = hospitalRepository.findByHospitalName(claimRequestDto.getHospitalName());</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (!hospitalInfo.isPresent()) {</span>
+<span class="fc" id="L79">			throw new InfoException(ClaimConstants.HOSPITAL_NOT_EXIST);</span>
+		}
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">		if (hospitalInfo.get().getNetworkStatus().equals(ClaimConstants.IN_NETWORK)) {</span>
+<span class="fc" id="L82">			eligibleAmount = claimRequestDto.getTotalAmount() * 0.8;</span>
+<span class="fc" id="L83">			claim.setEligiblityAmount(eligibleAmount);</span>
+		}
+<span class="fc" id="L85">		eligibleAmount = claimRequestDto.getTotalAmount() * 0.8;</span>
+<span class="fc" id="L86">		claim.setEligiblityAmount(eligibleAmount);</span>
+<span class="fc" id="L87">		claim.setHospitalId(hospitalInfo.get().getHospitalId());</span>
+<span class="fc" id="L88">		claim.setClaimId(policyNumber);</span>
+<span class="fc" id="L89">		claim.setAdmitDate(admitDate);</span>
+<span class="fc" id="L90">		claim.setDischargeDate(dischargeDate);</span>
+<span class="fc" id="L91">		claim.setClaimAmount(claimRequestDto.getTotalAmount());</span>
+<span class="fc" id="L92">		Optional&lt;Ailments&gt; ailment = ailmentRepository.findByAilmentName(claimRequestDto.getNatureOfAilment());</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (!ailment.isPresent()) {</span>
+<span class="fc" id="L94">			throw new InfoException(ClaimConstants.AILMENT_NOT_EXIST);</span>
+		}
+<span class="fc" id="L96">		maximumAmount = ailment.get().getMaxAmount();</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">		if (eligibleAmount &gt; maximumAmount) {</span>
+<span class="nc" id="L98">			claim.setJuniorApproverClaimStatus(ClaimConstants.PENDING_STATUS);</span>
+		}
+<span class="fc" id="L100">		claim.setJuniorApproverClaimStatus(ClaimConstants.ESCALATED_STATUS);</span>
+<span class="fc" id="L101">		claimRepository.save(claim);</span>
+<span class="fc" id="L102">		Optional&lt;Policy&gt; policy = policyRepository.findById(claimRequestDto.getPolicyId());</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		if (!policy.isPresent()) {</span>
+<span class="fc" id="L104">			throw new PolicyNotExistException(ClaimConstants.POLICY_INFO_DOESNOT_EXIST);</span>
 		}
 
-<span class="nc" id="L76">		user = userRepository.findById(policy.get().getUserId());</span>
-<span class="nc bnc" id="L77" title="All 2 branches missed.">		if (!user.isPresent()) {</span>
-<span class="nc" id="L78">			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);</span>
+<span class="fc" id="L107">		user = userRepository.findById(policy.get().getUserId());</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (!user.isPresent()) {</span>
+<span class="fc" id="L109">			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);</span>
 		}
 
-<span class="nc" id="L81">		claimResponse.setClaimId(claim.getClaimId());</span>
-<span class="nc" id="L82">		claimResponse.setEmailId(user.get().getEmailId());</span>
-<span class="nc" id="L83">		claimResponse.setFirstName(user.get().getFirstName());</span>
-<span class="nc" id="L84">		claimResponse.setLastName(user.get().getLastName());</span>
-<span class="nc" id="L85">		claimResponse.setPolicyNumber(policy.get().getPolicyId());</span>
-<span class="nc" id="L86">		claimResponse.setMessage(ClaimConstants.CLAIM_APPLIED);</span>
-<span class="nc" id="L87">		claimResponse.setStatusCode(HttpStatus.CREATED.value());</span>
-<span class="nc" id="L88">		return Optional.of(claimResponse);</span>
+<span class="fc" id="L112">		claimResponse.setClaimId(claim.getClaimId());</span>
+<span class="fc" id="L113">		claimResponse.setEmailId(user.get().getEmailId());</span>
+<span class="fc" id="L114">		claimResponse.setFirstName(user.get().getFirstName());</span>
+<span class="fc" id="L115">		claimResponse.setLastName(user.get().getLastName());</span>
+<span class="fc" id="L116">		claimResponse.setPolicyNumber(policy.get().getPolicyId());</span>
+<span class="fc" id="L117">		claimResponse.setMessage(ClaimConstants.CLAIM_APPLIED);</span>
+<span class="fc" id="L118">		claimResponse.setStatusCode(HttpStatus.CREATED.value());</span>
+<span class="fc" id="L119">		return Optional.of(claimResponse);</span>
 	}
 
 	/**
-
+	 * 
 	 * This method is used to avail claim info of the logged-in use Approver/Senior
 	 * Approver .
 	 * 
@@ -98,69 +129,68 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 	 * @return Optional&lt;List&lt;Claim&gt;&gt;
 	 */
 
-
 	@Override
 	public Optional&lt;Claim&gt; updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo)
 			throws UserNotExistException, ClaimNotFoundException {
-<span class="nc" id="L105">		Optional&lt;User&gt; userInfo = userRepository.findById(claimUpdateInfo.getUserId());</span>
-<span class="nc bnc" id="L106" title="All 2 branches missed.">		if (!userInfo.isPresent()) {</span>
-<span class="nc" id="L107">			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);</span>
+<span class="fc" id="L135">		Optional&lt;User&gt; userInfo = userRepository.findById(claimUpdateInfo.getUserId());</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (!userInfo.isPresent()) {</span>
+<span class="fc" id="L137">			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);</span>
 		}
-<span class="nc" id="L109">		Optional&lt;Claim&gt; claimInfo = claimRepository.findById(claimUpdateInfo.getClaimId());</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">		if (!claimInfo.isPresent()) {</span>
-<span class="nc" id="L111">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_FOUND);</span>
+<span class="fc" id="L139">		Optional&lt;Claim&gt; claimInfo = claimRepository.findById(claimUpdateInfo.getClaimId());</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (!claimInfo.isPresent()) {</span>
+<span class="fc" id="L141">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_FOUND);</span>
 		}
-<span class="nc" id="L113">		Claim claim = claimInfo.get();</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">		if (userInfo.get().getRoleId().equals(ClaimConstants.Approver)) {</span>
-<span class="nc" id="L115">			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());</span>
-<span class="nc" id="L116">			claim.setReason(claimUpdateInfo.getReason());</span>
-<span class="nc bnc" id="L117" title="All 2 branches missed.">			if (!(claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS))) {</span>
-<span class="nc" id="L118">				claim.setJuniorApprovedBy(userInfo.get().getFirstName() + &quot; &quot; + userInfo.get().getLastName());</span>
+<span class="fc" id="L143">		Claim claim = claimInfo.get();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (userInfo.get().getRoleId().equals(ClaimConstants.Approver)) {</span>
+<span class="fc" id="L145">			claim.setJuniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());</span>
+<span class="fc" id="L146">			claim.setReason(claimUpdateInfo.getReason());</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">			if (!(claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS))) {</span>
+<span class="nc" id="L148">				claim.setJuniorApprovedBy(userInfo.get().getFirstName() + &quot; &quot; + userInfo.get().getLastName());</span>
 			}
 		}
-<span class="nc bnc" id="L121" title="All 2 branches missed.">		if (userInfo.get().getRoleId().equals(ClaimConstants.seniorApprover)) {</span>
-<span class="nc" id="L122">			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());</span>
-<span class="nc" id="L123">			claim.setReason(claimUpdateInfo.getReason());</span>
-<span class="nc bnc" id="L124" title="All 2 branches missed.">			if (!claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS)) {</span>
-<span class="nc" id="L125">				claim.setSeniorApprovedBy(userInfo.get().getFirstName() + &quot; &quot; + userInfo.get().getLastName());</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (userInfo.get().getRoleId().equals(ClaimConstants.seniorApprover)) {</span>
+<span class="fc" id="L152">			claim.setSeniorApproverClaimStatus(claimUpdateInfo.getClaimStatus());</span>
+<span class="fc" id="L153">			claim.setReason(claimUpdateInfo.getReason());</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (!claimUpdateInfo.getClaimStatus().equals(ClaimConstants.PENDING_STATUS)) {</span>
+<span class="nc" id="L155">				claim.setSeniorApprovedBy(userInfo.get().getFirstName() + &quot; &quot; + userInfo.get().getLastName());</span>
 			}
 		}
 
-<span class="nc" id="L129">		return Optional.of(claim);</span>
+<span class="fc" id="L159">		return Optional.of(claim);</span>
 	}
 
 	@Override
 	public Optional&lt;List&lt;Claim&gt;&gt; getClaimList(Integer userId, Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException {
 
-<span class="nc" id="L136">		Optional&lt;Claim&gt; claims = claimRepository.findByUserId(userId);</span>
-<span class="nc bnc" id="L137" title="All 2 branches missed.">		if (!claims.isPresent()) {</span>
-<span class="nc" id="L138">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
+<span class="nc" id="L166">		Optional&lt;Claim&gt; claims = claimRepository.findByUserId(userId);</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">		if (!claims.isPresent()) {</span>
+<span class="nc" id="L168">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
 		}
-<span class="nc" id="L140">		Optional&lt;User&gt; user = userRepository.findById(claims.get().getUserId());</span>
-<span class="nc bnc" id="L141" title="All 2 branches missed.">		if (!user.isPresent()) {</span>
-<span class="nc" id="L142">			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);</span>
+<span class="nc" id="L170">		Optional&lt;User&gt; user = userRepository.findById(claims.get().getUserId());</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">		if (!user.isPresent()) {</span>
+<span class="nc" id="L172">			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);</span>
 		}
-<span class="nc" id="L144">		Integer role = user.get().getRoleId();</span>
-<span class="nc" id="L145">		List&lt;Claim&gt; claimInfos = claimRepository.findAll();</span>
-<span class="nc" id="L146">		List&lt;Claim&gt; claimResponse = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L147" title="All 2 branches missed.">		if (role .equals(ClaimConstants.seniorApprover)) {</span>
-<span class="nc" id="L148">			claimInfos.forEach(claimInfo -&gt; {</span>
-<span class="nc bnc" id="L149" title="All 2 branches missed.">				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {</span>
-<span class="nc" id="L150">					claimResponse.add(claimInfo);</span>
+<span class="nc" id="L174">		Integer role = user.get().getRoleId();</span>
+<span class="nc" id="L175">		List&lt;Claim&gt; claimInfos = claimRepository.findAll();</span>
+<span class="nc" id="L176">		List&lt;Claim&gt; claimResponse = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">		if (role.equals(ClaimConstants.seniorApprover)) {</span>
+<span class="nc" id="L178">			claimInfos.forEach(claimInfo -&gt; {</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {</span>
+<span class="nc" id="L180">					claimResponse.add(claimInfo);</span>
 				}
-<span class="nc" id="L152">			});</span>
+<span class="nc" id="L182">			});</span>
 
 		}
-<span class="nc bnc" id="L155" title="All 2 branches missed.">		if (role.equals(ClaimConstants.Approver)) {</span>
-<span class="nc" id="L156">			claimInfos.forEach(claimInfo -&gt; {</span>
-<span class="nc bnc" id="L157" title="All 2 branches missed.">				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {</span>
-<span class="nc" id="L158">					claimResponse.add(claimInfo);</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">		if (role.equals(ClaimConstants.Approver)) {</span>
+<span class="nc" id="L186">			claimInfos.forEach(claimInfo -&gt; {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">				if (claimInfo.getJuniorApproverClaimStatus().equals(ClaimConstants.ESCALATED_STATUS)) {</span>
+<span class="nc" id="L188">					claimResponse.add(claimInfo);</span>
 				}
-<span class="nc" id="L160">			});</span>
+<span class="nc" id="L190">			});</span>
 		}
 
-<span class="nc" id="L163">		return Optional.of(claimResponse);</span>
+<span class="nc" id="L193">		return Optional.of(claimResponse);</span>
 	}
 
 }

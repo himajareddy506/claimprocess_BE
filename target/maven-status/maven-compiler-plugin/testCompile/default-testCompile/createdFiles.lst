@@ -2,4 +2,5 @@ com\hcl\claimprocessing\controller\PolicyControllerTest.class
 com\hcl\claimprocessing\controller\UserControllerTest.class
 com\hcl\claimprocessing\service\PolicyServiceTest.class
 com\hcl\claimprocessing\service\UserServiceTest.class
+com\hcl\claimprocessing\service\ClaimServiceTest.class
 com\hcl\claimprocessing\controller\ClaimControllerTest.class

@@ -213,7 +213,7 @@ public class ClaimServiceTest {
 	}
 	@Test(expected = ClaimNotFoundException.class)
 	public void testUpdateClaimInfoValidation() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.ofNullable(user);
+		userInfo=Optional.of(user);
 		claimData=Optional.ofNullable(null);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
 		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
@@ -222,8 +222,8 @@ public class ClaimServiceTest {
 	}
 	@Test
 	public void testUpdateClaimRoleValidation() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.ofNullable(user);
-		claimData=Optional.ofNullable(claim);
+		userInfo=Optional.of(user);
+		claimData=Optional.of(claim);
 		user.setRoleId(1);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
 		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
@@ -232,12 +232,37 @@ public class ClaimServiceTest {
 	}
 	@Test
 	public void testUpdateClaimApproverValidation() throws UserNotExistException, ClaimNotFoundException {
-		userInfo=Optional.ofNullable(user);
-		claimData=Optional.ofNullable(claim);
+		userInfo=Optional.of(user);
+		claimData=Optional.of(claim);
 		user.setRoleId(2);
 		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
 		Mockito.when(claimRepository.findById(Mockito.anyLong())).thenReturn(claimData);
 		Optional<Claim> response=claimService.updateClaimInfo(claimUpdateInfo);
 		assertNotNull(response);
+	}
+	@Test(expected = ClaimNotFoundException.class)
+	public void testGetClaimListValidation() throws UserNotExistException, ClaimNotFoundException {
+		claimData=Optional.ofNullable(null);
+		Mockito.when(claimRepository.findByUserId(Mockito.anyInt())).thenReturn(claimData);
+		Optional<List<Claim>> claimList=claimService.getClaimList(user.getUserId(), pageNumber);
+		assertNotNull(claimList);
+	}
+	@Test(expected = UserNotExistException.class)
+	public void testGetClaimListUserValidation() throws UserNotExistException, ClaimNotFoundException {
+		userInfo=Optional.ofNullable(null);
+		claimData=Optional.of(claim);	
+		Mockito.when(claimRepository.findByUserId(Mockito.anyInt())).thenReturn(claimData);
+		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
+		Optional<List<Claim>> claimList=claimService.getClaimList(user.getUserId(), pageNumber);
+		assertNotNull(claimList);
+	}
+	@Test
+	public void testGetClaimList() throws UserNotExistException, ClaimNotFoundException {
+		userInfo=Optional.ofNullable(user);
+		claimData=Optional.of(claim);	
+		Mockito.when(claimRepository.findByUserId(Mockito.anyInt())).thenReturn(claimData);
+		Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(userInfo);
+		Optional<List<Claim>> claimList=claimService.getClaimList(user.getUserId(), pageNumber);
+		assertNotNull(claimList);
 	}
 }

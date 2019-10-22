@@ -22,7 +22,7 @@ import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
 import com.hcl.claimprocessing.dto.CommonResponse;
 import com.hcl.claimprocessing.entity.Claim;
 import com.hcl.claimprocessing.exception.ClaimNotFoundException;
-import com.hcl.claimprocessing.exception.InfoExistException;
+import com.hcl.claimprocessing.exception.InfoException;
 import com.hcl.claimprocessing.exception.PolicyNotExistException;
 import com.hcl.claimprocessing.exception.UserException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
@@ -55,7 +55,7 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 	@PostMapping(&quot;/claims&quot;)
 	public ResponseEntity&lt;ClaimResponseDto&gt; applyClaim(@RequestBody ClaimRequestDto claimRequestDto,
 			BindingResult result)
-			throws InfoExistException, PolicyNotExistException, UserNotExistException {
+			throws InfoException, PolicyNotExistException, UserNotExistException {
 <span class="fc" id="L59">		ClaimResponseDto claimResponse=new ClaimResponseDto();</span>
 <span class="fc" id="L60">		logger.info(&quot;Inside Apply Claim&quot;);</span>
 <span class="fc" id="L61">		Optional&lt;ClaimResponseDto&gt; claimInfo = claimService.applyClaim(claimRequestDto);</span>
