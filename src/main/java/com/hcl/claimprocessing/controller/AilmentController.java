@@ -20,7 +20,7 @@ import com.hcl.claimprocessing.service.AilmentService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/ailments")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
 public class AilmentController {
 
@@ -29,7 +29,7 @@ public class AilmentController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AilmentController.class);
 
-	@GetMapping("/ailments/{diagnosisId}")
+	@GetMapping("/{diagnosisId}")
 	public ResponseEntity<List<Ailments>> getAilmentList(@PathVariable Integer diagnosisId)
 			throws HospitalNotFoundException {
 		logger.info("Inside Get Ailments List");
