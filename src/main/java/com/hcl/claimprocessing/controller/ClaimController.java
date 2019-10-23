@@ -59,9 +59,12 @@ public class ClaimController {
 	@PostMapping("/claims")
 	public ResponseEntity<ClaimResponseDto> applyClaim(@Valid @RequestBody ClaimRequestDto claimRequestDto,
 			BindingResult result)
-			throws InfoException, PolicyNotExistException, UserNotExistException {
+			throws InfoException, PolicyNotExistException, UserNotExistException, ValidInputException {
 		ClaimResponseDto claimResponse=new ClaimResponseDto();
 		logger.info("Inside Apply Claim");
+		if(result.hasErrors()) {
+			throw new ValidInputException(result.getFieldError().getField() +":"+result.getFieldError().getDefaultMessage());
+		}
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
 		if(claimInfo.isPresent()) {
 			claimResponse=claimInfo.get();
@@ -78,11 +81,15 @@ public class ClaimController {
 	 * @return It returns CommonResponse
 	 * @exception ClaimNotFoundException,UserNotExistException,ValidInputException
 	 * @throws InfoException 
+	 * @throws ValidInputException 
 	 */
 	@PutMapping("/")
 	public ResponseEntity<CommonResponse> updateClaimInfo(@Valid @RequestBody  ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
-			throws UserNotExistException, ClaimNotFoundException, InfoException {
+			throws UserNotExistException, ClaimNotFoundException, InfoException, ValidInputException {
 		logger.info("Inside Update Claim");
+		if(result.hasErrors()) {
+			throw new ValidInputException(result.getFieldError().getField() +":"+result.getFieldError().getDefaultMessage());
+		}
 		CommonResponse response = new CommonResponse();
 		Optional<Claim> claimInfo = claimService.updateClaimInfo(claimUpdateInfo);
 		if (claimInfo.isPresent()) {

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.hcl.claimprocessing.controller.ClaimController;
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
 import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
@@ -50,7 +53,7 @@ public class ClaimServiceImpl implements ClaimService {
 	HospitalRepository hospitalRepository;
 	@Autowired
 	AilmentRepository ailmentRepository;
-
+	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
 	/**
 	 * This method is used to avail claim by the user who have policy/insurance .
 	 * 
@@ -62,6 +65,7 @@ public class ClaimServiceImpl implements ClaimService {
 	@Override
 	public Optional<ClaimResponseDto> applyClaim(ClaimRequestDto claimRequestDto)
 			throws InfoException, PolicyNotExistException, UserNotExistException {
+		logger.info("inside apply claim");
 		ClaimResponseDto claimResponse = new ClaimResponseDto();
 		Claim claim = new Claim();
 		Double eligibleAmount;
@@ -132,6 +136,7 @@ public class ClaimServiceImpl implements ClaimService {
 	@Override
 	public Optional<Claim> updateClaimInfo(ClaimUpdateRequestDto claimUpdateInfo)
 			throws UserNotExistException, ClaimNotFoundException, InfoException {
+		logger.info("inside update claim");
 		Optional<User> userInfo = userRepository.findById(claimUpdateInfo.getRoleId());
 		if (!userInfo.isPresent()) {
 			throw new UserNotExistException(ClaimConstants.USER_NOT_FOUND);
@@ -182,6 +187,7 @@ public class ClaimServiceImpl implements ClaimService {
 	@Override
 	public Optional<List<Claim>> getClaimList(Integer roleId, Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException {
+		logger.info("inside get claim list");
 		Pageable pageable = PageRequest.of(pageNumber, ClaimConstants.PAGENATION_SIZE);
 		List<Claim> claimInfos = claimRepository.findByRoleId(roleId, pageable);
 		List<Claim> claimResponse = new ArrayList<>();

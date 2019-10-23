@@ -2,6 +2,7 @@ package com.hcl.claimprocessing.controller;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.Optional;
 
@@ -37,6 +38,8 @@ public class UserControllerTest {
 	FieldError fieldError;
 	@Before
 	public void initiateDate() {
+		bindingResult=mock(BindingResult.class);
+		fieldError=new FieldError("userDto", "emailId", "must be valid");
 		user.setUserId(1);
 		user.setEmailId("subashri@gmail.com");
 		user.setFirstName("Subashri");
@@ -56,6 +59,16 @@ public class UserControllerTest {
 		assertEquals(200, userInfo.getStatusCode().value());
 		
 	}
-	
+	@Test(expected=ValidInputException.class)
+	public void testLoginUserValidation() throws UserNotExistException, LoginDeniedException, ValidInputException  {
+		user.setEmailId("suba");
+		userInfo=Optional.of(user);
+		Mockito.when(bindingResult.hasErrors()).thenReturn(true);
+		Mockito.when(bindingResult.getFieldError()).thenReturn(fieldError);
+		ResponseEntity<UserResponseDto> userInfo=userController.loginUser(userDto, bindingResult);
+		assertNotNull(userInfo);
+		assertEquals(200, userInfo.getStatusCode().value());
+		
+	}
 	
 }
