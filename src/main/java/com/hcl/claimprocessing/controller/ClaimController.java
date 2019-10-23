@@ -55,19 +55,19 @@ public class ClaimController {
 	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
 	 * @exception ValidInputException,InfoExistException,PolicyNotExistException,UserNotExistException
 	 * @return It returns ClaimResponseDto
+	 * @throws ClaimNotFoundException
 	 */
 	@PostMapping("/claims")
 	public ResponseEntity<ClaimResponseDto> applyClaim(@Valid @RequestBody ClaimRequestDto claimRequestDto,
 			BindingResult result)
-			throws InfoException, PolicyNotExistException, UserNotExistException {
-		ClaimResponseDto claimResponse=new ClaimResponseDto();
+			throws InfoException, PolicyNotExistException, UserNotExistException, ClaimNotFoundException {
 		logger.info("Inside Apply Claim");
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
-		if(claimInfo.isPresent()) {
-			claimResponse=claimInfo.get();
+		if (!claimInfo.isPresent()) {
+			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
 		}
-			
-			return new ResponseEntity<>(claimResponse, HttpStatus.CREATED);
+		ClaimResponseDto claimResponse = claimInfo.get();
+		return new ResponseEntity<>(claimResponse, HttpStatus.CREATED);
 	}
 
 	/**
@@ -77,18 +77,19 @@ public class ClaimController {
 	 * @param claimId,reason,claimStatus,userId
 	 * @return It returns CommonResponse
 	 * @exception ClaimNotFoundException,UserNotExistException,ValidInputException
-	 * @throws InfoException 
+	 * @throws InfoException
 	 */
 	@PutMapping("/")
-	public ResponseEntity<CommonResponse> updateClaimInfo(@Valid @RequestBody  ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
-			throws UserNotExistException, ClaimNotFoundException, InfoException {
+	public ResponseEntity<CommonResponse> updateClaimInfo(@Valid @RequestBody ClaimUpdateRequestDto claimUpdateInfo,
+			BindingResult result) throws UserNotExistException, ClaimNotFoundException, InfoException {
 		logger.info("Inside Update Claim");
 		CommonResponse response = new CommonResponse();
 		Optional<Claim> claimInfo = claimService.updateClaimInfo(claimUpdateInfo);
-		if (claimInfo.isPresent()) {
-			response.setMessage(ClaimConstants.CLAIM_UPDATE_SUCCESS);
-			response.setStatusCode(HttpStatus.OK.value());
+		if (!claimInfo.isPresent()) {
+			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
 		}
+		response.setMessage(ClaimConstants.CLAIM_UPDATE_SUCCESS);
+		response.setStatusCode(HttpStatus.OK.value());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

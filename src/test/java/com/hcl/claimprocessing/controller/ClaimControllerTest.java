@@ -1,7 +1,8 @@
 package com.hcl.claimprocessing.controller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;import java.time.LocalDate;
+import static org.junit.Assert.assertNotNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,19 +34,20 @@ public class ClaimControllerTest {
 	ClaimServiceImpl claimService;
 	@InjectMocks
 	ClaimController claimController;
-	 ClaimRequestDto claimRequestDto=new ClaimRequestDto();
-	 ClaimResponseDto claimResponse=new ClaimResponseDto();
-	 ClaimUpdateRequestDto claimUpdateInfo=new ClaimUpdateRequestDto();
-	 Claim claim=new Claim();
-	 Optional<Claim>claimData;
-	 Optional<ClaimResponseDto> claimInfo;
-	 BindingResult result;
-	 List<Claim> claimList=new ArrayList<>();
-	 Optional<List<Claim>> claimListInfo;
-	 Integer pageNumber=0;
+	ClaimRequestDto claimRequestDto = new ClaimRequestDto();
+	ClaimResponseDto claimResponse = new ClaimResponseDto();
+	ClaimUpdateRequestDto claimUpdateInfo = new ClaimUpdateRequestDto();
+	Claim claim = new Claim();
+	Optional<Claim> claimData;
+	Optional<ClaimResponseDto> claimInfo;
+	BindingResult result;
+	List<Claim> claimList = new ArrayList<>();
+	Optional<List<Claim>> claimListInfo;
+	Integer pageNumber = 0;
+
 	@Before
 	public void initiateData() {
-		
+
 		claimRequestDto.setAdmitDate("2019/06/21");
 		claimRequestDto.setDischargeDate("2019/06/23");
 		claimRequestDto.setClaimStatus("Pending");
@@ -81,38 +83,82 @@ public class ClaimControllerTest {
 		claim.setReason("Valid");
 		claim.setRoleId(1);
 		claimList.add(claim);
-		pageNumber=1;
-		
+		pageNumber = 1;
+
 	}
+
 	@Test
-	public void testApplyClaim() throws InfoException, PolicyNotExistException, UserNotExistException, ValidInputException {
-		claimInfo=Optional.of(claimResponse);
+	public void testApplyClaim() throws InfoException, PolicyNotExistException, UserNotExistException,
+			ValidInputException, ClaimNotFoundException {
+		claimInfo = Optional.of(claimResponse);
 		Mockito.when(claimService.applyClaim(Mockito.any())).thenReturn(claimInfo);
-		ResponseEntity<ClaimResponseDto> claimResponses=claimController.applyClaim(claimRequestDto, result);
+		ResponseEntity<ClaimResponseDto> claimResponses = claimController.applyClaim(claimRequestDto, result);
 		assertNotNull(claimResponses);
 	}
+
+	@Test(expected = ClaimNotFoundException.class)
+	public void testNegativeApplyClaim() throws InfoException, PolicyNotExistException, UserNotExistException,
+			ValidInputException, ClaimNotFoundException {
+		claimResponse = null;
+		claimInfo = Optional.ofNullable(claimResponse);
+		Mockito.when(claimService.applyClaim(Mockito.any())).thenReturn(claimInfo);
+		ResponseEntity<ClaimResponseDto> claimResponses = claimController.applyClaim(claimRequestDto, result);
+		assertNotNull(claimResponses);
+	}
+
 	@Test
-	public void testUpdateClaimInfo() throws UserNotExistException, ClaimNotFoundException, ValidInputException, InfoException {
-		claimData=Optional.of(claim);
+	public void testUpdateClaimInfo()
+			throws UserNotExistException, ClaimNotFoundException, ValidInputException, InfoException {
+		claimData = Optional.of(claim);
 		Mockito.when(claimService.updateClaimInfo(claimUpdateInfo)).thenReturn(claimData);
-		ResponseEntity<CommonResponse> response=claimController.updateClaimInfo(claimUpdateInfo, result);
+		ResponseEntity<CommonResponse> response = claimController.updateClaimInfo(claimUpdateInfo, result);
 		assertNotNull(response);
 		assertEquals(200, response.getStatusCode().value());
 	}
+
+	@Test(expected = ClaimNotFoundException.class)
+	public void testNegativeUpdateClaimInfo()
+			throws UserNotExistException, ClaimNotFoundException, ValidInputException, InfoException {
+		claim = null;
+		claimData = Optional.ofNullable(claim);
+		Mockito.when(claimService.updateClaimInfo(claimUpdateInfo)).thenReturn(claimData);
+		ResponseEntity<CommonResponse> response = claimController.updateClaimInfo(claimUpdateInfo, result);
+		assertNotNull(response);
+		assertEquals(200, response.getStatusCode().value());
+	}
+
 	@Test
 	public void testGetClaimList() throws UserNotExistException, ClaimNotFoundException, UserException {
-		claimListInfo=Optional.of(claimList);
+		claimListInfo = Optional.of(claimList);
 		Mockito.when(claimService.getClaimList(Mockito.anyInt(), Mockito.any())).thenReturn(claimListInfo);
-		ResponseEntity<List<Claim>> claimResponseList=claimController.getClaimList(claim.getRoleId(), pageNumber);
+		ResponseEntity<List<Claim>> claimResponseList = claimController.getClaimList(claim.getRoleId(), pageNumber);
 		assertNotNull(claimResponseList);
 	}
+
+	@Test(expected = ClaimNotFoundException.class)
+	public void testNegativeGetClaimList() throws UserNotExistException, ClaimNotFoundException, UserException {
+		claimList = null;
+		claimListInfo = Optional.ofNullable(claimList);
+		Mockito.when(claimService.getClaimList(Mockito.anyInt(), Mockito.any())).thenReturn(claimListInfo);
+		ResponseEntity<List<Claim>> claimResponseList = claimController.getClaimList(claim.getRoleId(), pageNumber);
+		assertNotNull(claimResponseList);
+	}
+
 	@Test(expected = UserException.class)
 	public void testGetClaimIdNull() throws UserNotExistException, ClaimNotFoundException, UserException {
-		claimListInfo=Optional.of(claimList);
-		pageNumber=-1;
-		ResponseEntity<List<Claim>> claimResponseList=claimController.getClaimList(claim.getRoleId(), pageNumber);
+		claimListInfo = Optional.of(claimList);
+		pageNumber = -1;
+		ResponseEntity<List<Claim>> claimResponseList = claimController.getClaimList(claim.getRoleId(), pageNumber);
 		assertNotNull(claimResponseList);
-		
+
+	}
+
+	@Test(expected = UserException.class)
+	public void testNegativeGetClaimIdNull() throws UserNotExistException, ClaimNotFoundException, UserException {
+		claimListInfo = Optional.of(claimList);
+		pageNumber = null;
+		ResponseEntity<List<Claim>> claimResponseList = claimController.getClaimList(claim.getRoleId(), pageNumber);
+		assertNotNull(claimResponseList);
 
 	}
 }

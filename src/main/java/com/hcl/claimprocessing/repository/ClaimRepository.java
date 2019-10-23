@@ -15,6 +15,6 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
 	Optional<Claim> findByAdmitDateAndDischargeDate(LocalDate admitDate, LocalDate dischargeDate);
 
-	List<Claim> findByRoleId(Integer roleId,Pageable pageable);
+	List<Claim> findByRoleId(Integer roleId, Pageable pageable);
 
 }

@@ -1,6 +1,12 @@
+com\hcl\claimprocessing\controller\HospitalControllerTest.class
 com\hcl\claimprocessing\controller\PolicyControllerTest.class
-com\hcl\claimprocessing\controller\UserControllerTest.class
 com\hcl\claimprocessing\service\PolicyServiceTest.class
-com\hcl\claimprocessing\service\UserServiceTest.class
-com\hcl\claimprocessing\service\ClaimServiceTest.class
+com\hcl\claimprocessing\service\HospitalServiceTest.class
 com\hcl\claimprocessing\controller\ClaimControllerTest.class
+com\hcl\claimprocessing\service\DiagnosisServcieTest.class
+com\hcl\claimprocessing\controller\UserControllerTest.class
+com\hcl\claimprocessing\service\UserServiceTest.class
+com\hcl\claimprocessing\controller\AilmentControllerTest.class
+com\hcl\claimprocessing\service\ClaimServiceTest.class
+com\hcl\claimprocessing\service\AilmentServiceTest.class
+com\hcl\claimprocessing\controller\DiagnosisControllerTest.class

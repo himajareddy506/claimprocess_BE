@@ -1,5 +1,6 @@
 package com.hcl.claimprocessing.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,5 +10,7 @@ import com.hcl.claimprocessing.entity.Ailments;
 
 @Repository
 public interface AilmentRepository extends JpaRepository<Ailments, Integer> {
-		Optional<Ailments> findByAilmentName(String ailmentName);
+	Optional<Ailments> findByAilmentName(String ailmentName);
+
+	Optional<List<Ailments>> findByDiagnosisId(Integer diagnosisId);
 }

@@ -11,59 +11,66 @@ import org.springframework.web.context.request.WebRequest;
 	private static final long serialVersionUID = 1L;
 
 	@ExceptionHandler(InfoException.class)
-	public ResponseEntity&lt;ErrorResponse&gt; infoExistException(InfoException e,WebRequest request) {
+	public ResponseEntity&lt;ErrorResponse&gt; infoExistException(InfoException e, WebRequest request) {
 
 <span class="nc" id="L16">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());</span>
 <span class="nc" id="L17">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
 	}
 
 	@ExceptionHandler(PolicyNotExistException.class)
-	public ResponseEntity&lt;ErrorResponse&gt; policyNotExistException(PolicyNotExistException e,WebRequest request) {
+	public ResponseEntity&lt;ErrorResponse&gt; policyNotExistException(PolicyNotExistException e, WebRequest request) {
 
 <span class="nc" id="L23">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());</span>
 <span class="nc" id="L24">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
 	}
 
 	@ExceptionHandler(UserNotExistException.class)
-	public ResponseEntity&lt;ErrorResponse&gt; userNotExistException(UserNotExistException e,WebRequest request) {
+	public ResponseEntity&lt;ErrorResponse&gt; userNotExistException(UserNotExistException e, WebRequest request) {
 
 <span class="nc" id="L30">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());</span>
 <span class="nc" id="L31">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
 	}
 
 	@ExceptionHandler(ValidInputException.class)
-	public ResponseEntity&lt;ErrorResponse&gt; validInputException(ValidInputException e,WebRequest request) {
+	public ResponseEntity&lt;ErrorResponse&gt; validInputException(ValidInputException e, WebRequest request) {
 
 <span class="nc" id="L37">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());</span>
 <span class="nc" id="L38">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
 	}
 
 	@ExceptionHandler(PolicyNotFoundException.class)
-	public ResponseEntity&lt;ErrorResponse&gt; policyNotFoundException(PolicyNotFoundException e,WebRequest request) {
+	public ResponseEntity&lt;ErrorResponse&gt; policyNotFoundException(PolicyNotFoundException e, WebRequest request) {
 
 <span class="nc" id="L44">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());</span>
 <span class="nc" id="L45">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
 	}
 
 	@ExceptionHandler(ClaimNotFoundException.class)
-	public ResponseEntity&lt;ErrorResponse&gt; claimNotFoundException(ClaimNotFoundException e,WebRequest request) {
+	public ResponseEntity&lt;ErrorResponse&gt; claimNotFoundException(ClaimNotFoundException e, WebRequest request) {
 
 <span class="nc" id="L51">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());</span>
 <span class="nc" id="L52">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
 	}
 
 	@ExceptionHandler(UserException.class)
-	public ResponseEntity&lt;ErrorResponse&gt; userException(UserException e,WebRequest request) {
+	public ResponseEntity&lt;ErrorResponse&gt; userException(UserException e, WebRequest request) {
 
 <span class="nc" id="L58">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());</span>
 <span class="nc" id="L59">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
 	}
 
 	@ExceptionHandler(LoginDeniedException.class)
-	public ResponseEntity&lt;ErrorResponse&gt; loginDeniedException(LoginDeniedException e,WebRequest request) {
+	public ResponseEntity&lt;ErrorResponse&gt; loginDeniedException(LoginDeniedException e, WebRequest request) {
 
 <span class="nc" id="L65">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());</span>
 <span class="nc" id="L66">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
+	}
+
+	@ExceptionHandler(HospitalNotFoundException.class)
+	public ResponseEntity&lt;ErrorResponse&gt; hospitalNotFoundException(HospitalNotFoundException e, WebRequest request) {
+
+<span class="nc" id="L72">		ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());</span>
+<span class="nc" id="L73">		return new ResponseEntity&lt;&gt;(error, HttpStatus.OK);</span>
 	}
 
 }
