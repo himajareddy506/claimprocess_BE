@@ -55,22 +55,24 @@ public class ClaimController {
 	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
 	 * @exception ValidInputException,InfoExistException,PolicyNotExistException,UserNotExistException
 	 * @return It returns ClaimResponseDto
+	 * @throws ClaimNotFoundException
 	 */
 	@PostMapping("/claims")
 	public ResponseEntity<ClaimResponseDto> applyClaim(@Valid @RequestBody ClaimRequestDto claimRequestDto,
 			BindingResult result)
-			throws InfoException, PolicyNotExistException, UserNotExistException, ValidInputException {
-		ClaimResponseDto claimResponse=new ClaimResponseDto();
+
+			throws InfoException, PolicyNotExistException, UserNotExistException, ClaimNotFoundException, ValidInputException {
 		logger.info("Inside Apply Claim");
-		if(result.hasErrors()) {
-			throw new ValidInputException(result.getFieldError().getField() +":"+result.getFieldError().getDefaultMessage());
+		if (result.hasErrors()) {
+			throw new ValidInputException(
+					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
 		}
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
-		if(claimInfo.isPresent()) {
-			claimResponse=claimInfo.get();
+		if (!claimInfo.isPresent()) {
+			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
 		}
-			
-			return new ResponseEntity<>(claimResponse, HttpStatus.CREATED);
+		ClaimResponseDto claimResponse = claimInfo.get();
+		return new ResponseEntity<>(claimResponse, HttpStatus.CREATED);
 	}
 
 	/**
@@ -83,19 +85,22 @@ public class ClaimController {
 	 * @throws InfoException 
 	 * @throws ValidInputException 
 	 */
+
 	@PutMapping("/")
-	public ResponseEntity<CommonResponse> updateClaimInfo(@Valid @RequestBody  ClaimUpdateRequestDto claimUpdateInfo, BindingResult result)
-			throws UserNotExistException, ClaimNotFoundException, InfoException, ValidInputException {
+	public ResponseEntity<CommonResponse> updateClaimInfo(@Valid @RequestBody ClaimUpdateRequestDto claimUpdateInfo,
+			BindingResult result) throws UserNotExistException, ClaimNotFoundException, InfoException, ValidInputException {
+
 		logger.info("Inside Update Claim");
 		if(result.hasErrors()) {
 			throw new ValidInputException(result.getFieldError().getField() +":"+result.getFieldError().getDefaultMessage());
 		}
 		CommonResponse response = new CommonResponse();
 		Optional<Claim> claimInfo = claimService.updateClaimInfo(claimUpdateInfo);
-		if (claimInfo.isPresent()) {
-			response.setMessage(ClaimConstants.CLAIM_UPDATE_SUCCESS);
-			response.setStatusCode(HttpStatus.OK.value());
+		if (!claimInfo.isPresent()) {
+			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);
 		}
+		response.setMessage(ClaimConstants.CLAIM_UPDATE_SUCCESS);
+		response.setStatusCode(HttpStatus.OK.value());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

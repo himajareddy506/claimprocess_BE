@@ -26,12 +26,13 @@ public class ClaimConstants {
 	public static final String INVALID_INPUTS = "Invalid pagenumber";
 	public static final String INVALID_CREDENTIAL = "Invalid credentials";
 	public static final String CLAIM_UPDATE_SUCCESS = "Claim Info Updated Successfully";
-	public static final String HOSPITAL_NOT_EXIST="Hospital Doesnot cover the Claim";
-	public static final String IN_NETWORK="In";
-	public static final String OUT_OF_NETWORK="Out";
-	public static final String REVERT_BACK="Rever Back";
-	public static final String AILMENT_NOT_EXIST="No Ailment Info Found";
-	public static final String REJECTED_STATUS="Rejected";
-	
-
+	public static final String HOSPITAL_NOT_EXIST = "Hospital Doesnot cover the Claim";
+	public static final String IN_NETWORK = "In";
+	public static final String OUT_OF_NETWORK = "Out";
+	public static final String REVERT_BACK = "Rever Back";
+	public static final String AILMENT_NOT_EXIST = "No Ailment Info Found";
+	public static final String REJECTED_STATUS = "Rejected";
+	public static final String HOSPITAL_INFO_NOT_EXIST = "Hospital Info not exists";
+	public static final String DIAGNOSIS_INFO_NOT_EXIST = "Diagnosis Info not exists";
+	public static final String AILMENT_INFO_NOT_EXIST = "Ailment Info Not exists";
 }

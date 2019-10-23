@@ -43,6 +43,7 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 
 @Service
 public class ClaimServiceImpl implements ClaimService {
+
 	@Autowired
 	ClaimRepository claimRepository;
 	@Autowired
@@ -199,7 +200,6 @@ public class ClaimServiceImpl implements ClaimService {
 			});
 
 		}
-
 		return Optional.of(claimResponse);
 	}
 
