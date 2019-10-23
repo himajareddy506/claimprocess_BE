@@ -61,4 +61,4 @@ public class UserServiceTest {
 		Optional<User> userLoginInfo=userServiceImpl.loginUser(userDto);
 		assertNotNull(userLoginInfo);
 	}
-}
+	}

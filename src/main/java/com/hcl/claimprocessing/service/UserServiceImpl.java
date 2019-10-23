@@ -2,9 +2,12 @@ package com.hcl.claimprocessing.service;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hcl.claimprocessing.controller.PolicyController;
 import com.hcl.claimprocessing.dto.UserRequestDto;
 import com.hcl.claimprocessing.entity.User;
 import com.hcl.claimprocessing.exception.LoginDeniedException;
@@ -22,6 +25,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserRepository userRepository;
+	private static final Logger logger = LoggerFactory.getLogger(PolicyController.class);
 
 	/**
 	 * This method will be used for the userLogin based on the Role
@@ -33,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Optional<User> loginUser(UserRequestDto loginRequestDto) throws UserNotExistException, LoginDeniedException {
-
+		logger.info("inside user login");
 		Optional<User> user = userRepository.findByEmailIdAndPassCode(loginRequestDto.getEmailId(),loginRequestDto.getPassCode());
 		if (!user.isPresent()) {
 			throw new UserNotExistException(ClaimConstants.INVALID_CREDENTIAL);

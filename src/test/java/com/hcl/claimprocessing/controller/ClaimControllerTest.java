@@ -2,10 +2,12 @@ package com.hcl.claimprocessing.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+
 import com.hcl.claimprocessing.dto.ClaimRequestDto;
 import com.hcl.claimprocessing.dto.ClaimResponseDto;
 import com.hcl.claimprocessing.dto.ClaimUpdateRequestDto;
@@ -34,20 +38,25 @@ public class ClaimControllerTest {
 	ClaimServiceImpl claimService;
 	@InjectMocks
 	ClaimController claimController;
-	ClaimRequestDto claimRequestDto = new ClaimRequestDto();
-	ClaimResponseDto claimResponse = new ClaimResponseDto();
-	ClaimUpdateRequestDto claimUpdateInfo = new ClaimUpdateRequestDto();
-	Claim claim = new Claim();
-	Optional<Claim> claimData;
-	Optional<ClaimResponseDto> claimInfo;
-	BindingResult result;
-	List<Claim> claimList = new ArrayList<>();
-	Optional<List<Claim>> claimListInfo;
-	Integer pageNumber = 0;
-
+	 ClaimRequestDto claimRequestDto=new ClaimRequestDto();
+	 ClaimResponseDto claimResponse=new ClaimResponseDto();
+	 ClaimUpdateRequestDto claimUpdateInfo=new ClaimUpdateRequestDto();
+	 Claim claim=new Claim();
+	 Optional<Claim>claimData;
+	 Optional<ClaimResponseDto> claimInfo;
+	 BindingResult bindingResult;
+	 FieldError fieldError;
+	 FieldError fieldErrors;
+	 List<Claim> claimList=new ArrayList<>();
+	 Optional<List<Claim>> claimListInfo;
+	 Integer pageNumber=0;
+	
 	@Before
 	public void initiateData() {
 
+		bindingResult=mock(BindingResult.class);
+		fieldError=new FieldError("claimRequestDto","policyId", "PolicyId is null");
+		fieldErrors=new FieldError("claimUpdateInfo","claimId", "ClaimId is null");
 		claimRequestDto.setAdmitDate("2019/06/21");
 		claimRequestDto.setDischargeDate("2019/06/23");
 		claimRequestDto.setClaimStatus("Pending");
@@ -87,12 +96,34 @@ public class ClaimControllerTest {
 
 	}
 
+	@Test(expected=ValidInputException.class)
+	public void testApplyClaimValidation() throws InfoException, PolicyNotExistException, UserNotExistException, ValidInputException, ClaimNotFoundException {
+		claimInfo=Optional.of(claimResponse);
+		claimRequestDto.setPolicyId(null);
+		Mockito.when(bindingResult.hasErrors()).thenReturn(true);
+		Mockito.when(bindingResult.getFieldError()).thenReturn(fieldError);
+		ResponseEntity<ClaimResponseDto> claimResponses=claimController.applyClaim(claimRequestDto, bindingResult);
+		assertNotNull(claimResponses);
+	}
+	
+	@Test(expected=ValidInputException.class)
+	public void testUpdateClaimInfoValidation() throws UserNotExistException, ClaimNotFoundException, ValidInputException, InfoException {
+		claim.setClaimId(null);
+		claimData=Optional.of(claim);
+		Mockito.when(bindingResult.hasErrors()).thenReturn(true);
+		Mockito.when(bindingResult.getFieldError()).thenReturn(fieldErrors);
+		ResponseEntity<CommonResponse> response=claimController.updateClaimInfo(claimUpdateInfo, bindingResult);
+		assertNotNull(response);
+		assertEquals(200, response.getStatusCode().value());
+	}
+
+
 	@Test
 	public void testApplyClaim() throws InfoException, PolicyNotExistException, UserNotExistException,
 			ValidInputException, ClaimNotFoundException {
 		claimInfo = Optional.of(claimResponse);
 		Mockito.when(claimService.applyClaim(Mockito.any())).thenReturn(claimInfo);
-		ResponseEntity<ClaimResponseDto> claimResponses = claimController.applyClaim(claimRequestDto, result);
+		ResponseEntity<ClaimResponseDto> claimResponses = claimController.applyClaim(claimRequestDto, bindingResult);
 		assertNotNull(claimResponses);
 	}
 
@@ -102,7 +133,7 @@ public class ClaimControllerTest {
 		claimResponse = null;
 		claimInfo = Optional.ofNullable(claimResponse);
 		Mockito.when(claimService.applyClaim(Mockito.any())).thenReturn(claimInfo);
-		ResponseEntity<ClaimResponseDto> claimResponses = claimController.applyClaim(claimRequestDto, result);
+		ResponseEntity<ClaimResponseDto> claimResponses = claimController.applyClaim(claimRequestDto, bindingResult);
 		assertNotNull(claimResponses);
 	}
 
@@ -111,7 +142,7 @@ public class ClaimControllerTest {
 			throws UserNotExistException, ClaimNotFoundException, ValidInputException, InfoException {
 		claimData = Optional.of(claim);
 		Mockito.when(claimService.updateClaimInfo(claimUpdateInfo)).thenReturn(claimData);
-		ResponseEntity<CommonResponse> response = claimController.updateClaimInfo(claimUpdateInfo, result);
+		ResponseEntity<CommonResponse> response=claimController.updateClaimInfo(claimUpdateInfo, bindingResult);
 		assertNotNull(response);
 		assertEquals(200, response.getStatusCode().value());
 	}
@@ -122,7 +153,7 @@ public class ClaimControllerTest {
 		claim = null;
 		claimData = Optional.ofNullable(claim);
 		Mockito.when(claimService.updateClaimInfo(claimUpdateInfo)).thenReturn(claimData);
-		ResponseEntity<CommonResponse> response = claimController.updateClaimInfo(claimUpdateInfo, result);
+		ResponseEntity<CommonResponse> response = claimController.updateClaimInfo(claimUpdateInfo, bindingResult);
 		assertNotNull(response);
 		assertEquals(200, response.getStatusCode().value());
 	}
