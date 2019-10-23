@@ -51,6 +51,7 @@ public class ClaimServiceTest {
 	PolicyRepository policyRepository;
 	@Mock
 	UserRepository userRepository;
+
 	@InjectMocks
 	ClaimServiceImpl claimService;
 	ClaimRequestDto claimRequestDto = new ClaimRequestDto();

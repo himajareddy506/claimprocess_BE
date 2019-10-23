@@ -18,6 +18,12 @@ import com.hcl.claimprocessing.exception.HospitalNotFoundException;
 import com.hcl.claimprocessing.service.HospitalService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
+/**
+ * This class is used to get the list of hospitals
+ * 
+ * 
+ * @author Jyoshna
+ */
 @RestController
 @RequestMapping("/api/v1/hospitals")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
@@ -27,6 +33,15 @@ public class HospitalController {
 	HospitalService hospitalService;
 
 	private static final Logger logger = LoggerFactory.getLogger(HospitalController.class);
+
+	/**
+	 * This method is used to get the list of hospitals .
+	 * 
+	 * @param noparams
+	 * @exception HOSPITAL_INFO_NOT_EXIST
+	 * @return This method returns the list of hospitals
+	 * @throws HospitalNotFoundException
+	 */
 
 	@GetMapping("/")
 	public ResponseEntity<List<Hospital>> getHospitalList() throws HospitalNotFoundException {

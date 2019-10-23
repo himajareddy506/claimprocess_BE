@@ -26,7 +26,7 @@ import com.hcl.claimprocessing.service.UserService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class will be used for the userLogin based on the Role
+ * This class will be used for the user login based on the Role
  * 
  * @author Subashri
  */
@@ -37,22 +37,24 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
+
 	/**
-	 * This method will be used for the userLogin based on the Role
+	 * This method will be used for the user login based on the Role
 	 * 
 	 * @param emailId , passcode
-	 * @return It returns UserResponseDto
-	 * @throws ValidInputException 
+	 * @return This method returns message,userId,roleId
+	 * @throws ValidInputException,LOGIN_SUCCESS
 	 * @exception It handles
 	 *               ValidInputException,UserNotExistException,LoginDeniedException
 	 */
 
 	@PostMapping("/")
-	public ResponseEntity<UserResponseDto> loginUser(@Valid @RequestBody UserRequestDto loginRequestDto, BindingResult result)
-			throws UserNotExistException, LoginDeniedException, ValidInputException {
+	public ResponseEntity<UserResponseDto> loginUser(@Valid @RequestBody UserRequestDto loginRequestDto,
+			BindingResult result) throws UserNotExistException, LoginDeniedException, ValidInputException {
 		logger.info("inside the login");
-		if(result.hasErrors()) {
-			throw new ValidInputException(result.getFieldError().getField() +":"+result.getFieldError().getDefaultMessage());
+		if (result.hasErrors()) {
+			throw new ValidInputException(
+					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
 		}
 		UserResponseDto userResponse = new UserResponseDto();
 		Optional<User> user = userService.loginUser(loginRequestDto);

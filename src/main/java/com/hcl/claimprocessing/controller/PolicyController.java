@@ -20,7 +20,7 @@ import com.hcl.claimprocessing.service.PolicyService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class is used to check whether the user already has the policy
+ * This class is used to check the policy of users
  * 
  * @author Jyoshhna
  *
@@ -39,9 +39,9 @@ public class PolicyController {
 	 * This method is used to check whether the user has the policy inorder to claim
 	 * 
 	 * @param policyId
-	 * @return It returns PolicyResponseDto
+	 * @return This method returns the message of whether policy exists or not
 	 * @exception POLICY_ID_MANDATORY_EXCEPTION,POLICY_NOT_FOUND_EXCEPTION
-	 *
+	 * @throws PolicyNotFoundException
 	 */
 
 	@PostMapping("/")

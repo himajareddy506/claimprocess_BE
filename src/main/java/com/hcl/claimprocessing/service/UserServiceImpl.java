@@ -12,11 +12,12 @@ import com.hcl.claimprocessing.dto.UserRequestDto;
 import com.hcl.claimprocessing.entity.User;
 import com.hcl.claimprocessing.exception.LoginDeniedException;
 import com.hcl.claimprocessing.exception.UserNotExistException;
+import com.hcl.claimprocessing.exception.ValidInputException;
 import com.hcl.claimprocessing.repository.UserRepository;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class will be used for the userLogin based on the Role
+ * This class will be used for the user login based on the Role
  * 
  * @author Subashri
  */
@@ -28,17 +29,19 @@ public class UserServiceImpl implements UserService {
 	private static final Logger logger = LoggerFactory.getLogger(PolicyController.class);
 
 	/**
-	 * This method will be used for the userLogin based on the Role
+	 * This method will be used for the user login based on the Role
 	 * 
 	 * @param emailId , passcode
-	 * @exception It handles UserNotExistException,LoginDeniedException
-	 * 
+	 * @return This method returns message,userId,roleId
+	 * @throws ValidInputException,INVALID_CREDENTIAL
+	 * @exception It handles
+	 *               ValidInputException,UserNotExistException,LoginDeniedException
 	 */
-
 	@Override
 	public Optional<User> loginUser(UserRequestDto loginRequestDto) throws UserNotExistException, LoginDeniedException {
 		logger.info("inside user login");
-		Optional<User> user = userRepository.findByEmailIdAndPassCode(loginRequestDto.getEmailId(),loginRequestDto.getPassCode());
+		Optional<User> user = userRepository.findByEmailIdAndPassCode(loginRequestDto.getEmailId(),
+				loginRequestDto.getPassCode());
 		if (!user.isPresent()) {
 			throw new UserNotExistException(ClaimConstants.INVALID_CREDENTIAL);
 		}
