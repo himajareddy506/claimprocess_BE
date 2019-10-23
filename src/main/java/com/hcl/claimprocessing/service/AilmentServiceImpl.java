@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.hcl.claimprocessing.entity.Ailments;
 import com.hcl.claimprocessing.repository.AilmentRepository;
+import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
  * This class is used to get the list of ailments based on selected diagnosis
@@ -35,7 +36,8 @@ public class AilmentServiceImpl implements AilmentService {
 
 	@Override
 	public Optional<List<Ailments>> getAilmentList(Integer diagnosisId) {
-		logger.info("inside ailment service");
+
+		logger.info(ClaimConstants.GET_AILMENT_LIST_SERVICE);
 		return ailmentRepository.findByDiagnosisId(diagnosisId);
 
 	}

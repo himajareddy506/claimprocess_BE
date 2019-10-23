@@ -3,19 +3,17 @@
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-<span class="fc" id="L12">@Setter</span>
-<span class="fc" id="L13">public class UserRequestDto {</span>
+<span class="fc" id="L10">@Setter</span>
+<span class="fc" id="L11">public class UserRequestDto {</span>
 	@Email
 	@NotNull
 	@Column(unique = true)
-<span class="fc" id="L17">	private String emailId;</span>
+<span class="fc" id="L15">	private String emailId;</span>
 	@NotNull
-<span class="fc" id="L19">	private String passCode;</span>
+<span class="fc" id="L17">	private String passCode;</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

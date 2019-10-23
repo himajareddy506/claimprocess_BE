@@ -26,7 +26,7 @@ import com.hcl.claimprocessing.service.UserService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class will be used for the userLogin based on the Role
+ * This class will be used for the user login based on the Role
  * 
  * @author Subashri
  */
@@ -37,32 +37,34 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 	@Autowired
 	UserService userService;
 <span class="fc" id="L39">	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);</span>
+
 	/**
-	 * This method will be used for the userLogin based on the Role
+	 * This method will be used for the user login based on the Role
 	 * 
 	 * @param emailId , passcode
-	 * @return It returns UserResponseDto
-	 * @throws ValidInputException 
+	 * @return This method returns message,userId,roleId
+	 * @throws ValidInputException,LOGIN_SUCCESS
 	 * @exception It handles
 	 *               ValidInputException,UserNotExistException,LoginDeniedException
 	 */
 
 	@PostMapping(&quot;/&quot;)
-	public ResponseEntity&lt;UserResponseDto&gt; loginUser(@Valid @RequestBody UserRequestDto loginRequestDto, BindingResult result)
-			throws UserNotExistException, LoginDeniedException, ValidInputException {
-<span class="fc" id="L53">		logger.info(&quot;inside the login&quot;);</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">		if(result.hasErrors()) {</span>
-<span class="fc" id="L55">			throw new ValidInputException(result.getFieldError().getField() +&quot;:&quot;+result.getFieldError().getDefaultMessage());</span>
+	public ResponseEntity&lt;UserResponseDto&gt; loginUser(@Valid @RequestBody UserRequestDto loginRequestDto,
+			BindingResult result) throws UserNotExistException, LoginDeniedException, ValidInputException {
+<span class="fc" id="L54">		logger.info(ClaimConstants.USER_LOGIN_CONTROLLER_INFO);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (result.hasErrors()) {</span>
+<span class="fc" id="L56">			throw new ValidInputException(result.getFieldError().getField() + ClaimConstants.SEPERATOR</span>
+<span class="fc" id="L57">					+ result.getFieldError().getDefaultMessage());</span>
 		}
-<span class="fc" id="L57">		UserResponseDto userResponse = new UserResponseDto();</span>
-<span class="fc" id="L58">		Optional&lt;User&gt; user = userService.loginUser(loginRequestDto);</span>
-<span class="fc" id="L59">		user.ifPresent(users -&gt; {</span>
-<span class="fc" id="L60">			userResponse.setUserId(users.getUserId());</span>
-<span class="fc" id="L61">			userResponse.setRoleId(user.get().getRoleId());</span>
-<span class="fc" id="L62">			userResponse.setMessage(ClaimConstants.LOGIN_SUCCESS);</span>
-<span class="fc" id="L63">			userResponse.setStatusCode(HttpStatus.OK.value());</span>
-<span class="fc" id="L64">		});</span>
-<span class="fc" id="L65">		return new ResponseEntity&lt;&gt;(userResponse, HttpStatus.OK);</span>
+<span class="fc" id="L59">		UserResponseDto userResponse = new UserResponseDto();</span>
+<span class="fc" id="L60">		Optional&lt;User&gt; user = userService.loginUser(loginRequestDto);</span>
+<span class="fc" id="L61">		user.ifPresent(users -&gt; {</span>
+<span class="fc" id="L62">			userResponse.setUserId(users.getUserId());</span>
+<span class="fc" id="L63">			userResponse.setRoleId(user.get().getRoleId());</span>
+<span class="fc" id="L64">			userResponse.setMessage(ClaimConstants.LOGIN_SUCCESS);</span>
+<span class="fc" id="L65">			userResponse.setStatusCode(HttpStatus.OK.value());</span>
+<span class="fc" id="L66">		});</span>
+<span class="fc" id="L67">		return new ResponseEntity&lt;&gt;(userResponse, HttpStatus.OK);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

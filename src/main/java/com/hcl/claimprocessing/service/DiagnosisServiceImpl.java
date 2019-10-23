@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.hcl.claimprocessing.entity.Diagnosis;
 import com.hcl.claimprocessing.repository.DiagnosisRepository;
+import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
  * This class is used to get the list of diagnosis
@@ -35,7 +36,7 @@ public class DiagnosisServiceImpl implements DiagnosisService {
 
 	@Override
 	public Optional<List<Diagnosis>> getDiagnosis() {
-		logger.info("inside diagnosis service");
+		logger.info(ClaimConstants.GET_DIAGNOSIS_LIST_SERVICE);
 		List<Diagnosis> diagnosisList = diagnosisRepository.findAll();
 		return Optional.of(diagnosisList);
 	}

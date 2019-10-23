@@ -20,7 +20,7 @@ import com.hcl.claimprocessing.service.PolicyService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class is used to check whether the user already has the policy
+ * This class is used to check the policy of users
  * 
  * @author Jyoshhna
  *
@@ -39,14 +39,14 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 	 * This method is used to check whether the user has the policy inorder to claim
 	 * 
 	 * @param policyId
-	 * @return It returns PolicyResponseDto
+	 * @return This method returns the message of whether policy exists or not
 	 * @exception POLICY_ID_MANDATORY_EXCEPTION,POLICY_NOT_FOUND_EXCEPTION
-	 *
+	 * @throws PolicyNotFoundException
 	 */
 
 	@PostMapping(&quot;/&quot;)
 	public ResponseEntity&lt;CommonResponse&gt; search(@RequestParam(&quot;policyId&quot;) Long policyId) {
-<span class="fc" id="L49">		logger.info(&quot;inside search policy controller&quot;);</span>
+<span class="fc" id="L49">		logger.info(ClaimConstants.SEARCH_POLICY_INFO_CONTROLLER);</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		if (policyId == null) {</span>
 <span class="fc" id="L51">			throw new PolicyNotFoundException(ClaimConstants.POLICY_ID_MANDATORY_EXCEPTION);</span>
 		}

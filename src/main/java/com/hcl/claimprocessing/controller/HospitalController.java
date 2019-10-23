@@ -45,7 +45,7 @@ public class HospitalController {
 
 	@GetMapping("/")
 	public ResponseEntity<List<Hospital>> getHospitalList() throws HospitalNotFoundException {
-		logger.info("Inside Get Hospital List");
+		logger.info(ClaimConstants.GET_HOSPITAL_LIST_CONTROLLER);
 		Optional<List<Hospital>> hospitalList = hospitalService.getHospitals();
 		if (!hospitalList.isPresent()) {
 			throw new HospitalNotFoundException(ClaimConstants.HOSPITAL_INFO_NOT_EXIST);
