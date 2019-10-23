@@ -18,24 +18,39 @@ import com.hcl.claimprocessing.exception.HospitalNotFoundException;
 import com.hcl.claimprocessing.service.HospitalService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
+/**
+ * This class is used to get the list of hospitals
+ * 
+ * 
+ * @author Jyoshna
+ */
 @RestController
-@RequestMapping(&quot;/api/v1&quot;)
+@RequestMapping(&quot;/api/v1/hospitals&quot;)
 @CrossOrigin(allowedHeaders = { &quot;*&quot;, &quot;*/&quot; }, origins = { &quot;*&quot;, &quot;*/&quot; })
-<span class="fc" id="L24">public class HospitalController {</span>
+<span class="fc" id="L30">public class HospitalController {</span>
 
 	@Autowired
 	HospitalService hospitalService;
 
-<span class="fc" id="L29">	private static final Logger logger = LoggerFactory.getLogger(HospitalController.class);</span>
+<span class="fc" id="L35">	private static final Logger logger = LoggerFactory.getLogger(HospitalController.class);</span>
 
-	@GetMapping(&quot;/hospitals&quot;)
+	/**
+	 * This method is used to get the list of hospitals .
+	 * 
+	 * @param noparams
+	 * @exception HOSPITAL_INFO_NOT_EXIST
+	 * @return This method returns the list of hospitals
+	 * @throws HospitalNotFoundException
+	 */
+
+	@GetMapping(&quot;/&quot;)
 	public ResponseEntity&lt;List&lt;Hospital&gt;&gt; getHospitalList() throws HospitalNotFoundException {
-<span class="fc" id="L33">		logger.info(&quot;Inside Get Hospital List&quot;);</span>
-<span class="fc" id="L34">		Optional&lt;List&lt;Hospital&gt;&gt; hospitalList = hospitalService.getHospitals();</span>
-<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (!hospitalList.isPresent()) {</span>
-<span class="fc" id="L36">			throw new HospitalNotFoundException(ClaimConstants.HOSPITAL_INFO_NOT_EXIST);</span>
+<span class="fc" id="L48">		logger.info(ClaimConstants.GET_HOSPITAL_LIST_CONTROLLER);</span>
+<span class="fc" id="L49">		Optional&lt;List&lt;Hospital&gt;&gt; hospitalList = hospitalService.getHospitals();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (!hospitalList.isPresent()) {</span>
+<span class="fc" id="L51">			throw new HospitalNotFoundException(ClaimConstants.HOSPITAL_INFO_NOT_EXIST);</span>
 		}
-<span class="fc" id="L38">		return new ResponseEntity&lt;&gt;(hospitalList.get(), HttpStatus.OK);</span>
+<span class="fc" id="L53">		return new ResponseEntity&lt;&gt;(hospitalList.get(), HttpStatus.OK);</span>
 
 	}
 

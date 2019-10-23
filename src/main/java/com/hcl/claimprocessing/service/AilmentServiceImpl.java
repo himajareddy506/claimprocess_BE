@@ -8,20 +8,35 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hcl.claimprocessing.controller.ClaimController;
 import com.hcl.claimprocessing.entity.Ailments;
 import com.hcl.claimprocessing.repository.AilmentRepository;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
+/**
+ * This class is used to get the list of ailments based on selected diagnosis
+ * 
+ * 
+ * @author Jyoshna
+ */
 @Service
 public class AilmentServiceImpl implements AilmentService {
 
 	@Autowired
 	AilmentRepository ailmentRepository;
-	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(AilmentServiceImpl.class);
+
+	/**
+	 * This method is used to get the list of ailments based on selected diagnosis .
+	 * 
+	 * @param diagnosisId
+	 * @return This method returns the list of ailments
+	 *
+	 */
 
 	@Override
 	public Optional<List<Ailments>> getAilmentList(Integer diagnosisId) {
+
 		logger.info(ClaimConstants.GET_AILMENT_LIST_SERVICE);
 		return ailmentRepository.findByDiagnosisId(diagnosisId);
 

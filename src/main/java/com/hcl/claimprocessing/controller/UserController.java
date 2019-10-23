@@ -26,7 +26,7 @@ import com.hcl.claimprocessing.service.UserService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class will be used for the userLogin based on the Role
+ * This class will be used for the user login based on the Role
  * 
  * @author Subashri
  */
@@ -39,11 +39,11 @@ public class UserController {
 	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
 
 	/**
-	 * This method will be used for the userLogin based on the Role
+	 * This method will be used for the user login based on the Role
 	 * 
 	 * @param emailId , passcode
-	 * @return It returns UserResponseDto
-	 * @throws ValidInputException
+	 * @return This method returns message,userId,roleId
+	 * @throws ValidInputException,LOGIN_SUCCESS
 	 * @exception It handles
 	 *               ValidInputException,UserNotExistException,LoginDeniedException
 	 */

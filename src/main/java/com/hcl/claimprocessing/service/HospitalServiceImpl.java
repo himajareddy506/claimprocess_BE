@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.hcl.claimprocessing.controller.HospitalController;
 import com.hcl.claimprocessing.entity.Hospital;
+import com.hcl.claimprocessing.exception.HospitalNotFoundException;
 import com.hcl.claimprocessing.repository.HospitalRepository;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
@@ -25,6 +26,15 @@ public class HospitalServiceImpl implements HospitalService {
 	@Autowired
 	HospitalRepository hospitalRepository;
 	private static final Logger logger = LoggerFactory.getLogger(HospitalController.class);
+
+	/**
+	 * This method is used to get the list of hospitals .
+	 * 
+	 * @param noparams
+	 * @exception HOSPITAL_INFO_NOT_EXIST
+	 * @return This method returns the list of hospitals
+	 * @throws HospitalNotFoundException
+	 */
 
 	@Override
 	public Optional<List<Hospital>> getHospitals() {

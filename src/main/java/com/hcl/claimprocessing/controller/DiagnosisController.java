@@ -18,6 +18,12 @@ import com.hcl.claimprocessing.exception.HospitalNotFoundException;
 import com.hcl.claimprocessing.service.DiagnosisService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
+/**
+ * This class is used to get the list of diagnosis
+ * 
+ * 
+ * @author Jyoshna
+ */
 @RestController
 @RequestMapping("/api/v1/diagnosis")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
@@ -25,6 +31,15 @@ public class DiagnosisController {
 	@Autowired
 	DiagnosisService diagnosisService;
 	private static final Logger logger = LoggerFactory.getLogger(DiagnosisController.class);
+
+	/**
+	 * This method is used to get the list of diagnosis .
+	 * 
+	 * @param noparams
+	 * @exception DIAGNOSIS_INFO_NOT_EXIST
+	 * @return This method returns the list of diagnosis
+	 * @throws HospitalNotFoundException
+	 */
 
 	@GetMapping("/")
 	public ResponseEntity<List<Diagnosis>> getDaignosisList() throws HospitalNotFoundException {

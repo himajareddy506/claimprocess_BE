@@ -36,8 +36,8 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
  * This class is used to avail claim by the user. The claim Status can be
- * updated by the Approver/PO The List of claim under an Approver can be
- * retrieved
+ * updated by the Junior Approver/Senior Approver. The List of claim under an
+ * Approver can be retrieved
  * 
  * @author Subashri
  */
@@ -53,68 +53,91 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 	 * This method is used to avail claim by the user who have policy/insurance .
 	 * 
 	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
-	 * @exception ValidInputException,InfoExistException,PolicyNotExistException,UserNotExistException
-	 * @return It returns ClaimResponseDto
-	 * @throws ClaimNotFoundException
+	 * @exception CLAIM_INFO_NOT_EXIST
+	 * @return This method returns the claim applied information
+	 * @throws ClaimNotFoundException,PolicyNotExistException,UserNotExistException,ValidInputException
 	 */
 	@PostMapping(&quot;/claims&quot;)
 	public ResponseEntity&lt;ClaimResponseDto&gt; applyClaim(@Valid @RequestBody ClaimRequestDto claimRequestDto,
-			BindingResult result)
-			throws InfoException, PolicyNotExistException, UserNotExistException, ClaimNotFoundException {
-<span class="fc" id="L64">		logger.info(&quot;Inside Apply Claim&quot;);</span>
-<span class="fc" id="L65">		Optional&lt;ClaimResponseDto&gt; claimInfo = claimService.applyClaim(claimRequestDto);</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		if (!claimInfo.isPresent()) {</span>
-<span class="fc" id="L67">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
+			BindingResult result) throws InfoException, PolicyNotExistException, UserNotExistException,
+			ClaimNotFoundException, ValidInputException {
+<span class="fc" id="L64">		logger.info(ClaimConstants.APPLY_CLAIM_CONTROLLER);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (result.hasErrors()) {</span>
+<span class="fc" id="L66">			throw new ValidInputException(result.getFieldError().getField() + ClaimConstants.SEPERATOR</span>
+<span class="fc" id="L67">					+ result.getFieldError().getDefaultMessage());</span>
 		}
-<span class="fc" id="L69">		ClaimResponseDto claimResponse = claimInfo.get();</span>
-<span class="fc" id="L70">		return new ResponseEntity&lt;&gt;(claimResponse, HttpStatus.CREATED);</span>
+<span class="fc" id="L69">		Optional&lt;ClaimResponseDto&gt; claimInfo = claimService.applyClaim(claimRequestDto);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (!claimInfo.isPresent()) {</span>
+<span class="fc" id="L71">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
+		}
+<span class="fc" id="L73">		ClaimResponseDto claimResponse = claimInfo.get();</span>
+<span class="fc" id="L74">		return new ResponseEntity&lt;&gt;(claimResponse, HttpStatus.CREATED);</span>
 	}
 
 	/**
 	 * This method is used to update the claimInfo of the user who have
-	 * policy/insurance .
+	 * policy/insurance by approve/reject.
 	 * 
-	 * @param claimId,reason,claimStatus,userId
+	 * @param claimId,reason,claimStatus,userId &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+	 * @return This method returns the status of applied claim either approve/reject
+	 * @exception CLAIM_INFO_NOT_EXIST,CLAIM_UPDATE_SUCCESS
+	 * @throws InfoException
+	 * @throws ValidInputException
+	 * @throws ClaimNotFoundException
+	 * @throws UserNotExistException  =======
 	 * @return It returns CommonResponse
 	 * @exception ClaimNotFoundException,UserNotExistException,ValidInputException
 	 * @throws InfoException
+	 * @throws ValidInputException &gt;&gt;&gt;&gt;&gt;&gt;&gt; e3d25fa0d0d869833281eeb987bbdd3661b4fc00
 	 */
+
 	@PutMapping(&quot;/&quot;)
 	public ResponseEntity&lt;CommonResponse&gt; updateClaimInfo(@Valid @RequestBody ClaimUpdateRequestDto claimUpdateInfo,
-			BindingResult result) throws UserNotExistException, ClaimNotFoundException, InfoException {
-<span class="fc" id="L85">		logger.info(&quot;Inside Update Claim&quot;);</span>
-<span class="fc" id="L86">		CommonResponse response = new CommonResponse();</span>
-<span class="fc" id="L87">		Optional&lt;Claim&gt; claimInfo = claimService.updateClaimInfo(claimUpdateInfo);</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (!claimInfo.isPresent()) {</span>
-<span class="fc" id="L89">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
+			BindingResult result)
+			throws UserNotExistException, ClaimNotFoundException, InfoException, ValidInputException {
+
+<span class="fc" id="L99">		logger.info(ClaimConstants.UPDATE_CLAIM_CONTROLLER);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (result.hasErrors()) {</span>
+<span class="fc" id="L101">			throw new ValidInputException(result.getFieldError().getField() + ClaimConstants.SEPERATOR</span>
+<span class="fc" id="L102">					+ result.getFieldError().getDefaultMessage());</span>
 		}
-<span class="fc" id="L91">		response.setMessage(ClaimConstants.CLAIM_UPDATE_SUCCESS);</span>
-<span class="fc" id="L92">		response.setStatusCode(HttpStatus.OK.value());</span>
-<span class="fc" id="L93">		return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
+<span class="fc" id="L104">		CommonResponse response = new CommonResponse();</span>
+<span class="fc" id="L105">		Optional&lt;Claim&gt; claimInfo = claimService.updateClaimInfo(claimUpdateInfo);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (!claimInfo.isPresent()) {</span>
+<span class="fc" id="L107">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
+		}
+<span class="fc" id="L109">		response.setMessage(ClaimConstants.CLAIM_UPDATE_SUCCESS);</span>
+<span class="fc" id="L110">		response.setStatusCode(HttpStatus.OK.value());</span>
+<span class="fc" id="L111">		return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
 	}
 
 	/**
-	 * This method is used to avail claim info of the logged-in use Approver/Senior
+	 * This method is used to get claim list for approve/reject for Approver/Senior
 	 * Approver .
 	 * 
-	 * @param userId,pageNumber
-	 * @exception UserNotExistException,ClaimNotFoundException,UserException
-	 * @return It returns &lt;List&lt;Claim&gt;
+	 * @param roleId,pageNumber
+	 * 
+	 * @return This method returns the list of user claim for particular
+	 *         Approver/Senior Approver
+	 * @exception INVALID_INPUTS,CLAIM_INFO_NOT_EXIST
+	 * @throws UserNotExistException
+	 * @throws ClaimNotFoundException
+	 * @throws UserException
 	 */
 
 	@GetMapping(&quot;/&quot;)
 	public ResponseEntity&lt;List&lt;Claim&gt;&gt; getClaimList(@RequestParam(&quot;roleId&quot;) Integer roleId,
 			@RequestParam(&quot;pageNumber&quot;) Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException, UserException {
-<span class="fc" id="L109">		logger.info(&quot;Inside Get Claim List&quot;);</span>
-<span class="fc bfc" id="L110" title="All 4 branches covered.">		if (pageNumber == null || pageNumber &lt; 0) {</span>
-<span class="fc" id="L111">			throw new UserException(ClaimConstants.INVALID_INPUTS);</span>
+<span class="fc" id="L132">		logger.info(ClaimConstants.GET_CLAIM_CONTROLLER);</span>
+<span class="fc bfc" id="L133" title="All 4 branches covered.">		if (pageNumber == null || pageNumber &lt; 0) {</span>
+<span class="fc" id="L134">			throw new UserException(ClaimConstants.INVALID_INPUTS);</span>
 		}
-<span class="fc" id="L113">		Optional&lt;List&lt;Claim&gt;&gt; claimList = claimService.getClaimList(roleId, pageNumber);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (!claimList.isPresent()) {</span>
-<span class="fc" id="L115">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
+<span class="fc" id="L136">		Optional&lt;List&lt;Claim&gt;&gt; claimList = claimService.getClaimList(roleId, pageNumber);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (!claimList.isPresent()) {</span>
+<span class="fc" id="L138">			throw new ClaimNotFoundException(ClaimConstants.CLAIM_INFO_NOT_EXIST);</span>
 		}
-<span class="fc" id="L117">		return new ResponseEntity&lt;&gt;(claimList.get(), HttpStatus.OK);</span>
+<span class="fc" id="L140">		return new ResponseEntity&lt;&gt;(claimList.get(), HttpStatus.OK);</span>
 
 	}
 }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claimprocessing</a> &gt; <a href="index.source.html" class="el_package">com.hcl.claimprocessing.service</a> &gt; <span class="el_source">UserServiceImpl.java</span></div><h1>UserServiceImpl.java</h1><pre class="source lang-java linenums">package com.hcl.claimprocessing.service;
+
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hcl.claimprocessing.controller.PolicyController;
+import com.hcl.claimprocessing.dto.UserRequestDto;
+import com.hcl.claimprocessing.entity.User;
+import com.hcl.claimprocessing.exception.LoginDeniedException;
+import com.hcl.claimprocessing.exception.UserNotExistException;
+import com.hcl.claimprocessing.exception.ValidInputException;
+import com.hcl.claimprocessing.repository.UserRepository;
+import com.hcl.claimprocessing.utils.ClaimConstants;
+
+/**
+ * This class will be used for the user login based on the Role
+ * 
+ * @author Subashri
+ */
+@Service
+<span class="fc" id="L25">public class UserServiceImpl implements UserService {</span>
+
+	@Autowired
+	UserRepository userRepository;
+<span class="fc" id="L29">	private static final Logger logger = LoggerFactory.getLogger(PolicyController.class);</span>
+
+	/**
+	 * This method will be used for the user login based on the Role
+	 * 
+	 * @param emailId , passcode
+	 * @return This method returns message,userId,roleId
+	 * @throws ValidInputException,INVALID_CREDENTIAL
+	 * @exception It handles
+	 *               ValidInputException,UserNotExistException,LoginDeniedException
+	 */
+	@Override
+	public Optional&lt;User&gt; loginUser(UserRequestDto loginRequestDto) throws UserNotExistException, LoginDeniedException {
+
+<span class="fc" id="L43">		logger.info(ClaimConstants.USER_LOGIN_SERVICE_INFO);</span>
+
+<span class="fc" id="L45">		Optional&lt;User&gt; user = userRepository.findByEmailIdAndPassCode(loginRequestDto.getEmailId(),</span>
+<span class="fc" id="L46">				loginRequestDto.getPassCode());</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (!user.isPresent()) {</span>
+<span class="fc" id="L48">			throw new UserNotExistException(ClaimConstants.INVALID_CREDENTIAL);</span>
+		}
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (!(user.get().getRoleId().equals(ClaimConstants.JUNIOR_APPROVER))</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">				&amp;&amp; !(user.get().getRoleId().equals(ClaimConstants.SENIOR_APPROVER))) {</span>
+<span class="fc" id="L52">			throw new LoginDeniedException(ClaimConstants.LOGIN_DENIED);</span>
+		}
+
+<span class="fc" id="L55">		return user;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

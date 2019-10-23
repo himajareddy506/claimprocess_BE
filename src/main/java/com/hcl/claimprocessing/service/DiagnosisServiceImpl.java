@@ -8,13 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hcl.claimprocessing.controller.ClaimController;
 import com.hcl.claimprocessing.entity.Diagnosis;
 import com.hcl.claimprocessing.repository.DiagnosisRepository;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class is used to avail claim by the user.
+ * This class is used to get the list of diagnosis
+ * 
  * 
  * @author Jyoshna
  */
@@ -24,7 +24,15 @@ public class DiagnosisServiceImpl implements DiagnosisService {
 
 	@Autowired
 	DiagnosisRepository diagnosisRepository;
-	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(DiagnosisServiceImpl.class);
+
+	/**
+	 * This method is used to get the list of diagnosis .
+	 * 
+	 * @param noparams
+	 * @return This method returns the list of diagnosis
+	 */
 
 	@Override
 	public Optional<List<Diagnosis>> getDiagnosis() {

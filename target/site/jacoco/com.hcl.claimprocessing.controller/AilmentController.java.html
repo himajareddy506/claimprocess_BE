@@ -19,25 +19,40 @@ import com.hcl.claimprocessing.exception.HospitalNotFoundException;
 import com.hcl.claimprocessing.service.AilmentService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
+/**
+ * This class is used to get the list of ailments based on selected diagnosis
+ * 
+ * 
+ * @author Jyoshna
+ */
 @RestController
-@RequestMapping(&quot;/api/v1&quot;)
+@RequestMapping(&quot;/api/v1/ailments&quot;)
 @CrossOrigin(allowedHeaders = { &quot;*&quot;, &quot;*/&quot; }, origins = { &quot;*&quot;, &quot;*/&quot; })
-<span class="fc" id="L25">public class AilmentController {</span>
+<span class="fc" id="L31">public class AilmentController {</span>
 
 	@Autowired
 	AilmentService ailmentService;
 
-<span class="fc" id="L30">	private static final Logger logger = LoggerFactory.getLogger(AilmentController.class);</span>
+<span class="fc" id="L36">	private static final Logger logger = LoggerFactory.getLogger(AilmentController.class);</span>
 
-	@GetMapping(&quot;/ailments/{diagnosisId}&quot;)
+	/**
+	 * This method is used to get the list of ailments based on selected diagnosis .
+	 * 
+	 * @param diagnosisId
+	 * @exception AILMENT_INFO_NOT_EXIST
+	 * @return This method returns the list of ailments
+	 * @throws HospitalNotFoundException
+	 */
+
+	@GetMapping(&quot;/{diagnosisId}&quot;)
 	public ResponseEntity&lt;List&lt;Ailments&gt;&gt; getAilmentList(@PathVariable Integer diagnosisId)
 			throws HospitalNotFoundException {
-<span class="fc" id="L35">		logger.info(&quot;Inside Get Ailments List&quot;);</span>
-<span class="fc" id="L36">		Optional&lt;List&lt;Ailments&gt;&gt; ailmentList = ailmentService.getAilmentList(diagnosisId);</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (!ailmentList.isPresent()) {</span>
-<span class="fc" id="L38">			throw new HospitalNotFoundException(ClaimConstants.AILMENT_INFO_NOT_EXIST);</span>
+<span class="fc" id="L50">		logger.info(ClaimConstants.GET_AILMENT_LIST_CONTROLLER);</span>
+<span class="fc" id="L51">		Optional&lt;List&lt;Ailments&gt;&gt; ailmentList = ailmentService.getAilmentList(diagnosisId);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (!ailmentList.isPresent()) {</span>
+<span class="fc" id="L53">			throw new HospitalNotFoundException(ClaimConstants.AILMENT_INFO_NOT_EXIST);</span>
 		}
-<span class="fc" id="L40">		return new ResponseEntity&lt;&gt;(ailmentList.get(), HttpStatus.OK);</span>
+<span class="fc" id="L55">		return new ResponseEntity&lt;&gt;(ailmentList.get(), HttpStatus.OK);</span>
 
 	}
 

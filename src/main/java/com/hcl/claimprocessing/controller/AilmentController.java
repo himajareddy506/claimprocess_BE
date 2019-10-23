@@ -19,8 +19,14 @@ import com.hcl.claimprocessing.exception.HospitalNotFoundException;
 import com.hcl.claimprocessing.service.AilmentService;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
+/**
+ * This class is used to get the list of ailments based on selected diagnosis
+ * 
+ * 
+ * @author Jyoshna
+ */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/ailments")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
 public class AilmentController {
 
@@ -29,7 +35,16 @@ public class AilmentController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AilmentController.class);
 
-	@GetMapping("/ailments/{diagnosisId}")
+	/**
+	 * This method is used to get the list of ailments based on selected diagnosis .
+	 * 
+	 * @param diagnosisId
+	 * @exception AILMENT_INFO_NOT_EXIST
+	 * @return This method returns the list of ailments
+	 * @throws HospitalNotFoundException
+	 */
+
+	@GetMapping("/{diagnosisId}")
 	public ResponseEntity<List<Ailments>> getAilmentList(@PathVariable Integer diagnosisId)
 			throws HospitalNotFoundException {
 		logger.info(ClaimConstants.GET_AILMENT_LIST_CONTROLLER);

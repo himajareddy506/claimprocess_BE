@@ -36,11 +36,12 @@ import com.hcl.claimprocessing.repository.UserRepository;
 import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
- * This class is used to avail claim by the user.
+ * This class is used to avail claim by the user. The claim Status can be
+ * updated by the Junior Approver/Senior Approver. The List of claim under an
+ * Approver can be retrieved
  * 
  * @author Subashri
  */
-
 @Service
 public class ClaimServiceImpl implements ClaimService {
 
@@ -185,6 +186,19 @@ public class ClaimServiceImpl implements ClaimService {
 		}
 		return Optional.of(claim);
 	}
+
+	/**
+	 * This method is used to get claim list for approve/reject for Approver/Senior
+	 * Approver .
+	 * 
+	 * @param roleId,pageNumber
+	 * 
+	 * @return This method returns the list of user claim for particular
+	 *         Approver/Senior Approver
+	 * @exception INVALID_INPUTS,CLAIM_INFO_NOT_EXIST
+	 * @throws UserNotExistException
+	 * @throws ClaimNotFoundException
+	 */
 
 	@Override
 	public Optional<List<Claim>> getClaimList(Integer roleId, Integer pageNumber)

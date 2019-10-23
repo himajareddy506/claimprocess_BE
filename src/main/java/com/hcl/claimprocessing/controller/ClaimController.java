@@ -36,8 +36,8 @@ import com.hcl.claimprocessing.utils.ClaimConstants;
 
 /**
  * This class is used to avail claim by the user. The claim Status can be
- * updated by the Approver/PO The List of claim under an Approver can be
- * retrieved
+ * updated by the Junior Approver/Senior Approver. The List of claim under an
+ * Approver can be retrieved
  * 
  * @author Subashri
  */
@@ -53,9 +53,9 @@ public class ClaimController {
 	 * This method is used to avail claim by the user who have policy/insurance .
 	 * 
 	 * @param policyId,admitDate,dischargeDate,hospitalName,totalAmount,detailsOfDischargeSummary,natureOfAilment,diagnosis
-	 * @exception ValidInputException,InfoExistException,PolicyNotExistException,UserNotExistException
-	 * @return It returns ClaimResponseDto
-	 * @throws ClaimNotFoundException
+	 * @exception CLAIM_INFO_NOT_EXIST
+	 * @return This method returns the claim applied information
+	 * @throws ClaimNotFoundException,PolicyNotExistException,UserNotExistException,ValidInputException
 	 */
 	@PostMapping("/claims")
 	public ResponseEntity<ClaimResponseDto> applyClaim(@Valid @RequestBody ClaimRequestDto claimRequestDto,
@@ -76,13 +76,19 @@ public class ClaimController {
 
 	/**
 	 * This method is used to update the claimInfo of the user who have
-	 * policy/insurance .
+	 * policy/insurance by approve/reject.
 	 * 
-	 * @param claimId,reason,claimStatus,userId
+	 * @param claimId,reason,claimStatus,userId <<<<<<< HEAD
+	 * @return This method returns the status of applied claim either approve/reject
+	 * @exception CLAIM_INFO_NOT_EXIST,CLAIM_UPDATE_SUCCESS
+	 * @throws InfoException
+	 * @throws ValidInputException
+	 * @throws ClaimNotFoundException
+	 * @throws UserNotExistException  =======
 	 * @return It returns CommonResponse
 	 * @exception ClaimNotFoundException,UserNotExistException,ValidInputException
 	 * @throws InfoException
-	 * @throws ValidInputException
+	 * @throws ValidInputException >>>>>>> e3d25fa0d0d869833281eeb987bbdd3661b4fc00
 	 */
 
 	@PutMapping("/")
@@ -106,12 +112,17 @@ public class ClaimController {
 	}
 
 	/**
-	 * This method is used to avail claim info of the logged-in use Approver/Senior
+	 * This method is used to get claim list for approve/reject for Approver/Senior
 	 * Approver .
 	 * 
-	 * @param userId,pageNumber
-	 * @exception UserNotExistException,ClaimNotFoundException,UserException
-	 * @return It returns <List<Claim>
+	 * @param roleId,pageNumber
+	 * 
+	 * @return This method returns the list of user claim for particular
+	 *         Approver/Senior Approver
+	 * @exception INVALID_INPUTS,CLAIM_INFO_NOT_EXIST
+	 * @throws UserNotExistException
+	 * @throws ClaimNotFoundException
+	 * @throws UserException
 	 */
 
 	@GetMapping("/")
