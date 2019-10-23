@@ -32,7 +32,7 @@ public class AilmentController {
 	@GetMapping("/ailments/{diagnosisId}")
 	public ResponseEntity<List<Ailments>> getAilmentList(@PathVariable Integer diagnosisId)
 			throws HospitalNotFoundException {
-		logger.info("Inside Get Ailments List");
+		logger.info(ClaimConstants.GET_AILMENT_LIST_CONTROLLER);
 		Optional<List<Ailments>> ailmentList = ailmentService.getAilmentList(diagnosisId);
 		if (!ailmentList.isPresent()) {
 			throw new HospitalNotFoundException(ClaimConstants.AILMENT_INFO_NOT_EXIST);

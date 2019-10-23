@@ -1,7 +1,6 @@
 package com.hcl.claimprocessing.dto;
 
-import com.sun.istack.NotNull;
-
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 

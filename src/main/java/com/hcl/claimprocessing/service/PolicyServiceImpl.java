@@ -38,7 +38,7 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Override
 	public Optional<Policy> search(Long policyId) {
-		logger.info("Inside policy Search");
+		logger.info(ClaimConstants.SEARCH_POLICY_INFO_SERVICE);
 		Optional<Policy> policy = policyRepository.findById(policyId);
 		if (!policy.isPresent())
 			throw new PolicyNotFoundException(ClaimConstants.POLICY_NOT_FOUND_EXCEPTION);

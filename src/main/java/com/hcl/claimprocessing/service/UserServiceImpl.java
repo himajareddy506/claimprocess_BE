@@ -37,8 +37,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Optional<User> loginUser(UserRequestDto loginRequestDto) throws UserNotExistException, LoginDeniedException {
-		logger.info("inside user login");
-		Optional<User> user = userRepository.findByEmailIdAndPassCode(loginRequestDto.getEmailId(),loginRequestDto.getPassCode());
+		logger.info(ClaimConstants.USER_LOGIN_SERVICE_INFO);
+		Optional<User> user = userRepository.findByEmailIdAndPassCode(loginRequestDto.getEmailId(),
+				loginRequestDto.getPassCode());
 		if (!user.isPresent()) {
 			throw new UserNotExistException(ClaimConstants.INVALID_CREDENTIAL);
 		}

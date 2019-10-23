@@ -59,13 +59,12 @@ public class ClaimController {
 	 */
 	@PostMapping("/claims")
 	public ResponseEntity<ClaimResponseDto> applyClaim(@Valid @RequestBody ClaimRequestDto claimRequestDto,
-			BindingResult result)
-
-			throws InfoException, PolicyNotExistException, UserNotExistException, ClaimNotFoundException, ValidInputException {
-		logger.info("Inside Apply Claim");
+			BindingResult result) throws InfoException, PolicyNotExistException, UserNotExistException,
+			ClaimNotFoundException, ValidInputException {
+		logger.info(ClaimConstants.APPLY_CLAIM_CONTROLLER);
 		if (result.hasErrors()) {
-			throw new ValidInputException(
-					result.getFieldError().getField() + ":" + result.getFieldError().getDefaultMessage());
+			throw new ValidInputException(result.getFieldError().getField() + ClaimConstants.SEPERATOR
+					+ result.getFieldError().getDefaultMessage());
 		}
 		Optional<ClaimResponseDto> claimInfo = claimService.applyClaim(claimRequestDto);
 		if (!claimInfo.isPresent()) {
@@ -82,17 +81,19 @@ public class ClaimController {
 	 * @param claimId,reason,claimStatus,userId
 	 * @return It returns CommonResponse
 	 * @exception ClaimNotFoundException,UserNotExistException,ValidInputException
-	 * @throws InfoException 
-	 * @throws ValidInputException 
+	 * @throws InfoException
+	 * @throws ValidInputException
 	 */
 
 	@PutMapping("/")
 	public ResponseEntity<CommonResponse> updateClaimInfo(@Valid @RequestBody ClaimUpdateRequestDto claimUpdateInfo,
-			BindingResult result) throws UserNotExistException, ClaimNotFoundException, InfoException, ValidInputException {
+			BindingResult result)
+			throws UserNotExistException, ClaimNotFoundException, InfoException, ValidInputException {
 
-		logger.info("Inside Update Claim");
-		if(result.hasErrors()) {
-			throw new ValidInputException(result.getFieldError().getField() +":"+result.getFieldError().getDefaultMessage());
+		logger.info(ClaimConstants.UPDATE_CLAIM_CONTROLLER);
+		if (result.hasErrors()) {
+			throw new ValidInputException(result.getFieldError().getField() + ClaimConstants.SEPERATOR
+					+ result.getFieldError().getDefaultMessage());
 		}
 		CommonResponse response = new CommonResponse();
 		Optional<Claim> claimInfo = claimService.updateClaimInfo(claimUpdateInfo);
@@ -117,7 +118,7 @@ public class ClaimController {
 	public ResponseEntity<List<Claim>> getClaimList(@RequestParam("roleId") Integer roleId,
 			@RequestParam("pageNumber") Integer pageNumber)
 			throws UserNotExistException, ClaimNotFoundException, UserException {
-		logger.info("Inside Get Claim List");
+		logger.info(ClaimConstants.GET_CLAIM_CONTROLLER);
 		if (pageNumber == null || pageNumber < 0) {
 			throw new UserException(ClaimConstants.INVALID_INPUTS);
 		}

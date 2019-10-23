@@ -35,4 +35,21 @@ public class ClaimConstants {
 	public static final String HOSPITAL_INFO_NOT_EXIST = "Hospital Info not exists";
 	public static final String DIAGNOSIS_INFO_NOT_EXIST = "Diagnosis Info not exists";
 	public static final String AILMENT_INFO_NOT_EXIST = "Ailment Info Not exists";
+	public static final String SEPERATOR=":";
+	public static final String USER_LOGIN_CONTROLLER_INFO="Inside Login Controller";
+	public static final String USER_LOGIN_SERVICE_INFO="Inside Login Service";
+	public static final String APPLY_CLAIM_CONTROLLER="Inside Apply Claim Controller";
+	public static final String APPLY_CLAIM_SERVICE="Inside Apply Claim Service";
+	public static final String UPDATE_CLAIM_CONTROLLER="Inside Update Claim Controller";
+	public static final String UPDATE_CLAIM_SERVICE="Inside Update Claim Service";
+	public static final String GET_CLAIM_SERVICE="Inside Get Claim list Service";
+	public static final String GET_CLAIM_CONTROLLER="Inside Get Claim list Controller";
+	public static final String GET_AILMENT_LIST_CONTROLLER="Inside Get Ailments List Controller";
+	public static final String GET_AILMENT_LIST_SERVICE="Inside Get Ailments List Service";
+	public static final String GET_DIAGNOSIS_LIST_SERVICE="Inside Get Diagnosis List Service";
+	public static final String GET_DIAGNOSIS_LIST_CONTROLLER="Inside Get Diagnosis List Controller";
+	public static final String GET_HOSPITAL_LIST_CONTROLLER="Inside Get Hospital List Controller";
+	public static final String GET_HOSPITAL_LIST_SERVICE="Inside Get Hospital List Service";
+	public static final String SEARCH_POLICY_INFO_CONTROLLER="Inside the Search Policy Controller";
+	public static final String SEARCH_POLICY_INFO_SERVICE="Inside the Search Policy Service";
 }

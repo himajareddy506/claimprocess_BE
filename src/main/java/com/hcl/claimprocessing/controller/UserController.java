@@ -37,22 +37,24 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);
+
 	/**
 	 * This method will be used for the userLogin based on the Role
 	 * 
 	 * @param emailId , passcode
 	 * @return It returns UserResponseDto
-	 * @throws ValidInputException 
+	 * @throws ValidInputException
 	 * @exception It handles
 	 *               ValidInputException,UserNotExistException,LoginDeniedException
 	 */
 
 	@PostMapping("/")
-	public ResponseEntity<UserResponseDto> loginUser(@Valid @RequestBody UserRequestDto loginRequestDto, BindingResult result)
-			throws UserNotExistException, LoginDeniedException, ValidInputException {
-		logger.info("inside the login");
-		if(result.hasErrors()) {
-			throw new ValidInputException(result.getFieldError().getField() +":"+result.getFieldError().getDefaultMessage());
+	public ResponseEntity<UserResponseDto> loginUser(@Valid @RequestBody UserRequestDto loginRequestDto,
+			BindingResult result) throws UserNotExistException, LoginDeniedException, ValidInputException {
+		logger.info(ClaimConstants.USER_LOGIN_CONTROLLER_INFO);
+		if (result.hasErrors()) {
+			throw new ValidInputException(result.getFieldError().getField() + ClaimConstants.SEPERATOR
+					+ result.getFieldError().getDefaultMessage());
 		}
 		UserResponseDto userResponse = new UserResponseDto();
 		Optional<User> user = userService.loginUser(loginRequestDto);

@@ -46,7 +46,7 @@ public class PolicyController {
 
 	@PostMapping("/")
 	public ResponseEntity<CommonResponse> search(@RequestParam("policyId") Long policyId) {
-		logger.info("inside search policy controller");
+		logger.info(ClaimConstants.SEARCH_POLICY_INFO_CONTROLLER);
 		if (policyId == null) {
 			throw new PolicyNotFoundException(ClaimConstants.POLICY_ID_MANDATORY_EXCEPTION);
 		}
